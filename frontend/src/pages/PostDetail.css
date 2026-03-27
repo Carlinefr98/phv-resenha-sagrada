@@ -58,6 +58,13 @@
 .post-detail-author {
     color: var(--accent-teal);
     font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.post-detail-author:hover {
+    color: #F1A416;
+    text-decoration: underline;
 }
 
 .post-detail-date {

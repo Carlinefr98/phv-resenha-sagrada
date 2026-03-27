@@ -136,26 +136,27 @@
 
 .timeline-delete-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(231, 59, 67, 0.2);
-    border: 1px solid rgba(231, 59, 67, 0.4);
-    color: #E73B43;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    top: -14px;
+    right: -14px;
+    background: rgba(231, 59, 67, 0.9);
+    border: 2px solid #1a1a2e;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     transition: all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
+    line-height: 1;
 }
 
 .timeline-delete-btn:hover {
     background: #E73B43;
-    color: #fff;
+    transform: scale(1.15);
 }
 
 @keyframes fadeIn {

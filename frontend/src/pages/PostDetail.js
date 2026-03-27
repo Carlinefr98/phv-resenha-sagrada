@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import Carousel from '../components/Carousel';
 import CommentSection from '../components/CommentSection';
@@ -64,7 +64,7 @@ const PostDetail = () => {
                 <div className="post-detail-header">
                     <h1 className="post-detail-title">{post.title}</h1>
                     <div className="post-detail-meta">
-                        <span className="post-detail-author">✌️ {post.author}</span>
+                        <Link to={`/perfil/${post.author}`} className="post-detail-author">✌️ {post.author}</Link>
                         <span className="post-detail-date">{new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
                     </div>
                 </div>

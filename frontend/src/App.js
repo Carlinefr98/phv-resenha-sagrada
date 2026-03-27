@@ -11,6 +11,7 @@ import Games from './pages/Games';
 import Museum from './pages/Museum';
 import Events from './pages/Events';
 import Profile from './pages/Profile';
+import UserProfile from './pages/UserProfile';
 import Admin from './pages/Admin';
 import './App.css';
 
@@ -28,7 +29,8 @@ function App() {
           <Route path="/jogos" component={Games} />
           <Route path="/museu" component={Museum} />
           <Route path="/eventos" component={Events} />
-          <Route path="/perfil" component={Profile} />
+          <Route path="/perfil" exact component={Profile} />
+          <Route path="/perfil/:username" component={UserProfile} />
           <Route path="/admin" component={Admin} />
         </Switch>
       </AuthProvider>

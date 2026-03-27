@@ -112,6 +112,13 @@
     color: var(--accent-teal);
     font-weight: 600;
     font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.post-card-author:hover {
+    color: #F1A416;
+    text-decoration: underline;
 }
 
 .post-card-date {

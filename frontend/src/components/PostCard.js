@@ -50,7 +50,7 @@ const PostCard = ({ post }) => {
                     <h3 className="post-card-title">{post.title}</h3>
                     <p className="post-card-description">{post.description}</p>
                     <div className="post-card-meta">
-                        <span className="post-card-author">✌️ {post.author}</span>
+                        <Link to={`/perfil/${post.author}`} className="post-card-author" onClick={e => e.stopPropagation()}>✌️ {post.author}</Link>
                         <span className="post-card-date">{new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
                     </div>
                 </div>
