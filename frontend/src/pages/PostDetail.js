@@ -43,6 +43,14 @@ const PostDetail = () => {
         );
     }
 
+    const getYoutubeId = (url) => {
+        if (!url) return null;
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+        return match ? match[1] : null;
+    };
+
+    const ytId = getYoutubeId(post.videoUrl);
+
     return (
         <div className="post-detail">
             <div className="post-detail-card">
@@ -55,6 +63,18 @@ const PostDetail = () => {
                 </div>
                 {post.Images && post.Images.length > 0 && (
                     <Carousel images={post.Images} />
+                )}
+                {ytId && (
+                    <div className="post-detail-video">
+                        <iframe
+                            width="100%" height="400"
+                            src={`https://www.youtube.com/embed/${ytId}`}
+                            title={post.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
                 )}
                 <div className="post-detail-body">
                     <p className="post-detail-description">{post.description}</p>

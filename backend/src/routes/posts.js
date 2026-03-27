@@ -31,8 +31,8 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
 // Create a new post
 router.post('/', upload.array('images', 5), async (req, res) => {
     try {
-        const { title, description, author } = req.body;
-        const post = await Post.create({ title, description, author });
+        const { title, description, author, videoUrl } = req.body;
+        const post = await Post.create({ title, description, author, videoUrl: videoUrl || null });
 
         if (req.files && req.files.length > 0) {
             const images = req.files.map(file => ({

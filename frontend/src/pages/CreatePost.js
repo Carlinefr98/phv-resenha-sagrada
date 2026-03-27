@@ -7,6 +7,7 @@ const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState([]);
+    const [videoUrl, setVideoUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const history = useHistory();
@@ -26,6 +27,7 @@ const CreatePost = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('author', user.username || 'Anônimo');
+        if (videoUrl.trim()) formData.append('videoUrl', videoUrl.trim());
         images.forEach((image) => {
             formData.append('images', image);
         });
@@ -72,7 +74,7 @@ const CreatePost = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Imagens</label>
+                        <label>Imagens (opcional)</label>
                         <div className="file-input-wrapper">
                             <input
                                 type="file"
@@ -85,6 +87,15 @@ const CreatePost = () => {
                                 📷 {images.length > 0 ? `${images.length} foto(s) selecionada(s)` : 'Escolher fotos'}
                             </label>
                         </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Vídeo (opcional — cole link do YouTube)</label>
+                        <input
+                            type="url"
+                            value={videoUrl}
+                            onChange={(e) => setVideoUrl(e.target.value)}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                        />
                     </div>
                     <button type="submit" className="create-post-btn" disabled={loading}>
                         {loading ? 'Postando...' : '🚀 Postar Resenha'}

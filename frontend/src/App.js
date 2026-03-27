@@ -11,6 +11,7 @@ import Games from './pages/Games';
 import Museum from './pages/Museum';
 import Events from './pages/Events';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
 import './App.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/museu" component={Museum} />
           <Route path="/eventos" component={Events} />
           <Route path="/perfil" component={Profile} />
+          <Route path="/admin" component={Admin} />
         </Switch>
       </AuthProvider>
     </Router>

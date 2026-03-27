@@ -12,6 +12,7 @@ const museumRoutes = require('./routes/museum');
 const eventRoutes = require('./routes/events');
 const badgeRoutes = require('./routes/badges');
 const memoryRoutes = require('./routes/memories');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -41,6 +42,7 @@ app.use('/api/museum', museumRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/badges', badgeRoutes);
 app.use('/api/memories', memoryRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Sync database and start server
 sequelize.sync().then(() => {

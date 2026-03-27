@@ -1,0 +1,213 @@
+.admin-page {
+    max-width: 900px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+}
+
+.admin-title {
+    font-family: 'League Spartan', sans-serif;
+    color: #F1A416;
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.admin-msg {
+    background: rgba(241, 164, 22, 0.15);
+    border: 1px solid #F1A416;
+    color: #F1A416;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'League Spartan', sans-serif;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    justify-content: center;
+}
+
+.admin-tab {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    padding: 12px 28px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.admin-tab:hover {
+    border-color: #2095A2;
+    color: #fff;
+}
+
+.admin-tab.active {
+    background: linear-gradient(135deg, #2095A2 0%, #F1A416 100%);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+}
+
+.admin-section {
+    animation: fadeIn 0.3s ease;
+}
+
+.admin-create-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.admin-create-form h3 {
+    color: #2095A2;
+    font-family: 'League Spartan', sans-serif;
+    margin-bottom: 15px;
+}
+
+.admin-create-form input[type="text"],
+.admin-create-form input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.admin-create-form input:focus {
+    border-color: #F1A416;
+    outline: none;
+}
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #ccc;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-family: 'League Spartan', sans-serif;
+}
+
+.admin-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #F1A416;
+}
+
+.admin-create-form button[type="submit"] {
+    background: linear-gradient(135deg, #2095A2 0%, #F1A416 100%);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.admin-create-form button[type="submit"]:hover {
+    transform: scale(1.03);
+}
+
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px 20px;
+    transition: border-color 0.3s;
+}
+
+.admin-item:hover {
+    border-color: #2095A2;
+}
+
+.admin-item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-item-name {
+    color: #fff;
+    font-family: 'League Spartan', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.admin-item-author {
+    color: #2095A2;
+    font-size: 0.9rem;
+}
+
+.admin-item-date {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #E73B43, #F1A416);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: 'League Spartan', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.admin-delete-btn {
+    background: rgba(231, 59, 67, 0.15);
+    border: 1px solid rgba(231, 59, 67, 0.3);
+    color: #E73B43;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-delete-btn:hover {
+    background: #E73B43;
+    color: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .admin-page { margin-top: 80px; }
+    .admin-title { font-size: 1.6rem; }
+    .admin-tabs { flex-direction: column; }
+    .admin-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .admin-delete-btn { align-self: flex-end; }
+}

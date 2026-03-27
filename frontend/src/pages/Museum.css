@@ -22,6 +22,131 @@
     font-size: 1rem;
 }
 
+.museum-admin-area {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.museum-add-btn {
+    background: linear-gradient(135deg, #2095A2, #F1A416);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 12px;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.museum-add-btn:hover { transform: scale(1.05); }
+
+.museum-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 20px;
+    text-align: left;
+    animation: fadeIn 0.3s ease;
+}
+
+.museum-form input[type="text"],
+.museum-form input[type="date"],
+.museum-form textarea {
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-family: 'League Spartan', sans-serif;
+    box-sizing: border-box;
+}
+
+.museum-form input:focus,
+.museum-form textarea:focus {
+    border-color: #F1A416;
+    outline: none;
+}
+
+.museum-file-input {
+    margin-bottom: 15px;
+}
+
+.museum-file-input input[type="file"] {
+    display: none;
+}
+
+.museum-file-input label {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: #ccc;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.museum-file-input label:hover {
+    border-color: #F1A416;
+}
+
+.museum-form button[type="submit"] {
+    background: linear-gradient(135deg, #2095A2, #F1A416);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+}
+
+.museum-form button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.timeline-card {
+    position: relative;
+}
+
+.timeline-delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(231, 59, 67, 0.2);
+    border: 1px solid rgba(231, 59, 67, 0.4);
+    color: #E73B43;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.timeline-delete-btn:hover {
+    background: #E73B43;
+    color: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .museum-loading, .museum-empty {
     text-align: center;
     color: rgba(255, 255, 255, 0.5);

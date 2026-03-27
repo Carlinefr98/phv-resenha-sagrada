@@ -13,6 +13,14 @@ const PostCard = ({ post }) => {
         return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
     };
 
+    const getYoutubeId = (url) => {
+        if (!url) return null;
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+        return match ? match[1] : null;
+    };
+
+    const ytId = getYoutubeId(post.videoUrl);
+
     return (
         <div className="post-card">
             <Link to={`/post/${post.id}`} className="post-card-link">
@@ -22,6 +30,12 @@ const PostCard = ({ post }) => {
                         {imageCount > 1 && (
                             <span className="post-card-image-count">📷 {imageCount} fotos</span>
                         )}
+                    </div>
+                )}
+                {!firstImage && ytId && (
+                    <div className="post-card-image-wrapper">
+                        <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt={post.title} className="post-card-image" />
+                        <span className="post-card-image-count">▶️ Vídeo</span>
                     </div>
                 )}
                 <div className="post-card-body">

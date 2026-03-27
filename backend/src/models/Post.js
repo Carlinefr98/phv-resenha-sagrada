@@ -13,6 +13,10 @@ const Post = sequelize.define('Post', {
     author: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    videoUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 

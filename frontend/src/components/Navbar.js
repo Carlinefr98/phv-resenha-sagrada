@@ -61,6 +61,11 @@ const Navbar = () => {
                             <Link to="/perfil" onClick={() => setMenuOpen(false)}>
                                 <span className="nav-emoji">🏆</span> Perfil
                             </Link>
+                            {user.isAdmin && (
+                                <Link to="/admin" onClick={() => setMenuOpen(false)}>
+                                    <span className="nav-emoji">⚙️</span> Admin
+                                </Link>
+                            )}
                             <div className="navbar-user-area">
                                 <span className="navbar-welcome">
                                     <span className="nav-emoji">&#9996;&#65039;</span> Olá, <strong>{user.username}</strong>

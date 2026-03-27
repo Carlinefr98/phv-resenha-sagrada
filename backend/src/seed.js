@@ -13,7 +13,7 @@ const seedDatabase = async () => {
         { username: 'Mariana', password: hashedPassword },
         { username: 'Danny', password: hashedPassword },
         { username: 'Jady', password: hashedPassword },
-        { username: 'Carlinhos', password: hashedPassword },
+        { username: 'Carlinhos', password: hashedPassword, isAdmin: true },
     ];
 
     const createdUsers = await User.bulkCreate(users);
