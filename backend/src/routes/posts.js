@@ -1,12 +1,18 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { Post, Image } = require('../models');
 
 const router = express.Router();
 
+const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-    destination: path.join(__dirname, '..', '..', 'uploads'),
+    destination: uploadsDir,
     filename: (req, file, cb) => {
         const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const ext = path.extname(file.originalname);
@@ -21,7 +27,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         const { title, description, author } = req.body;
         const post = await Post.create({ title, description, author });
 
-        if (req.files) {
+        if (req.files && req.files.length > 0) {
             const images = req.files.map(file => ({
                 postId: post.id,
                 url: 'uploads/' + file.filename
@@ -29,8 +35,10 @@ router.post('/', upload.array('images', 5), async (req, res) => {
             await Image.bulkCreate(images);
         }
 
-        res.status(201).json(post);
+        const fullPost = await Post.findByPk(post.id, { include: Image });
+        res.status(201).json(fullPost);
     } catch (error) {
+        console.error('Error creating post:', error);
         res.status(500).json({ error: 'Failed to create post' });
     }
 });
