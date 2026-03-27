@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import './Login.css';
-import { loginUser } from '../api/index';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const { login } = useContext(AuthContext);
     const history = useHistory();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await loginUser({ username, password });
-            if (response.token) {
-                localStorage.setItem('token', response.token);
-                localStorage.setItem('user', JSON.stringify({ userId: response.userId, username: response.username }));
-                history.push('/');
-            } else {
-                setError('Login falhou. Verifique suas credenciais.');
-            }
+            await login({ username, password });
+            history.push('/');
         } catch (err) {
             setError('Erro ao fazer login. Tente novamente.');
         }
