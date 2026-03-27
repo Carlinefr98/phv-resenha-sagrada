@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #141414;
+  --bg-card: #1a1a1a;
+  --bg-input: #141414;
+  --text-primary: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --accent-gold: #F1A416;
+  --accent-teal: #2095A2;
+  --accent-red: #E73B43;
+  --accent-purple: #750787;
+  --accent-blue: #004dff;
+  --accent-green: #008026;
+  --accent-orange: #ff8c00;
+  --accent-pink: #E73B43;
+  --accent-yellow: #F1A416;
+  --rainbow-1: #E73B43;
+  --rainbow-2: #ff8c00;
+  --rainbow-3: #F1A416;
+  --rainbow-4: #008026;
+  --rainbow-5: #2095A2;
+  --rainbow-6: #750787;
+  --gradient-rainbow: linear-gradient(135deg, #E73B43, #ff8c00, #F1A416, #008026, #2095A2, #750787);
+  --gradient-dark: linear-gradient(135deg, #0a0a0a 0%, #141414 50%, #1a1a1a 100%);
+  --gradient-card: linear-gradient(145deg, #141414, #1a1a1a);
+  --gradient-brand: linear-gradient(135deg, #F1A416, #2095A2);
+  --border-glow: 1px solid rgba(241, 164, 22, 0.25);
+  --shadow-glow: 0 0 15px rgba(241, 164, 22, 0.15);
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'League Spartan', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  background-image: 
+    radial-gradient(ellipse at 10% 20%, rgba(32, 149, 162, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 80%, rgba(231, 59, 67, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(241, 164, 22, 0.03) 0%, transparent 50%);
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+a {
+  color: var(--accent-teal);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-gold);
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-teal);
+}

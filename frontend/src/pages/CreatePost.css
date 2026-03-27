@@ -1,0 +1,125 @@
+.create-post {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.create-post-card {
+    background: var(--gradient-card);
+    border-radius: var(--radius-lg);
+    border: var(--border-glow);
+    padding: 32px;
+    box-shadow: var(--shadow-card);
+}
+
+.create-post-card h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.create-post-error {
+    background: rgba(231, 59, 67, 0.15);
+    color: var(--accent-red);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.create-post .form-group {
+    margin-bottom: 20px;
+}
+
+.create-post .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--accent-gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.create-post .form-group input[type="text"],
+.create-post .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(241, 164, 22, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.create-post .form-group input[type="text"]:focus,
+.create-post .form-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 12px rgba(32, 149, 162, 0.3);
+}
+
+.create-post .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.file-input-wrapper {
+    position: relative;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.file-input-label {
+    display: block;
+    padding: 12px 16px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(241, 164, 22, 0.3);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.file-input-label:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    background: rgba(241, 164, 22, 0.05);
+}
+
+.create-post-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-teal));
+    color: white;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.create-post-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(241, 164, 22, 0.4);
+}
+
+.create-post-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -1,0 +1,110 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 60px);
+    padding: 20px;
+    background: radial-gradient(ellipse at center, rgba(241, 164, 22, 0.06) 0%, transparent 70%);
+}
+
+.login-container h2 {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.login-container .login-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+}
+
+.login-container form {
+    background: var(--gradient-card);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    border: var(--border-glow);
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--accent-gold);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 1px solid rgba(241, 164, 22, 0.2);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'League Spartan', sans-serif;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 12px rgba(32, 149, 162, 0.3);
+}
+
+.login-container button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--accent-gold), var(--accent-teal));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'League Spartan', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+}
+
+.login-container button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+}
+
+.login-container .error {
+    color: var(--accent-red);
+    background: rgba(233, 69, 96, 0.1);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(233, 69, 96, 0.3);
+}
+
+.login-container p:last-child {
+    margin-top: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.login-container p:last-child a {
+    color: var(--accent-pink);
+    font-weight: 600;
+}
+
+.login-container p:last-child a:hover {
+    color: var(--accent-purple);
+}

@@ -1,0 +1,151 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(241, 164, 22, 0.15);
+}
+
+.navbar-rainbow-bar {
+    height: 3px;
+    background: linear-gradient(90deg, #E73B43, #ff8c00, #F1A416, #008026, #2095A2, #750787);
+}
+
+.navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(241, 164, 22, 0.3));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 12px rgba(241, 164, 22, 0.5));
+}
+
+.navbar-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    font-size: 1.3rem;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navbar-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.navbar-links a:hover {
+    color: var(--accent-gold);
+    background: rgba(241, 164, 22, 0.1);
+}
+
+.nav-emoji {
+    font-size: 1rem;
+}
+
+.navbar-user-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 8px;
+    padding-left: 14px;
+    border-left: 1px solid rgba(241, 164, 22, 0.25);
+}
+
+.navbar-welcome {
+    color: var(--accent-gold);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.navbar-welcome strong {
+    color: var(--text-primary);
+}
+
+.navbar-logout-btn {
+    background: linear-gradient(135deg, var(--accent-red), #c0392b);
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'League Spartan', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.navbar-logout-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(231, 59, 67, 0.4);
+}
+
+@media (max-width: 768px) {
+    .navbar-toggle {
+        display: block;
+    }
+
+    .navbar-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.98);
+        padding: 16px;
+        border-bottom: 1px solid rgba(241, 164, 22, 0.15);
+        gap: 4px;
+    }
+
+    .navbar-links.active {
+        display: flex;
+    }
+
+    .navbar-user-area {
+        flex-direction: column;
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+        padding-top: 8px;
+        border-top: 1px solid rgba(241, 164, 22, 0.15);
+    }
+}
