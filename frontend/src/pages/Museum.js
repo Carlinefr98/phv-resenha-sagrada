@@ -11,6 +11,7 @@ const Museum = () => {
     const [form, setForm] = useState({ title: '', description: '', date: '' });
     const [image, setImage] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [adminMode, setAdminMode] = useState(false);
 
     const fetchEvents = async () => {
         try {
@@ -68,6 +69,11 @@ const Museum = () => {
 
             {user && user.isAdmin && (
                 <div className="museum-admin-area">
+                    <button className="museum-admin-toggle" onClick={() => setAdminMode(!adminMode)}>
+                        {adminMode ? '🔒 Sair do modo Admin' : '🔧 Modo Admin'}
+                    </button>
+                    {adminMode && (
+                    <>
                     <button className="museum-add-btn" onClick={() => setShowForm(!showForm)}>
                         {showForm ? '✕ Cancelar' : '➕ Adicionar Momento'}
                     </button>
@@ -88,6 +94,8 @@ const Museum = () => {
                             </button>
                         </form>
                     )}
+                    </>
+                    )}
                 </div>
             )}
 
@@ -107,7 +115,7 @@ const Museum = () => {
                         <div key={event.id} className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}>
                             <div className="timeline-dot"></div>
                             <div className="timeline-card">
-                                {user && user.isAdmin && (
+                                {user && user.isAdmin && adminMode && (
                                     <button className="timeline-delete-btn" onClick={() => handleDelete(event.id)}>🗑️</button>
                                 )}
                                 <span className="timeline-date">{formatDate(event.date)}</span>

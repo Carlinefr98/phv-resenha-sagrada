@@ -27,6 +27,22 @@
     margin-bottom: 30px;
 }
 
+.museum-admin-toggle {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: 'League Spartan', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 12px;
+}
+
+.museum-admin-toggle:hover { background: rgba(255, 255, 255, 0.15); }
+
 .museum-add-btn {
     background: linear-gradient(135deg, #2095A2, #F1A416);
     color: #fff;

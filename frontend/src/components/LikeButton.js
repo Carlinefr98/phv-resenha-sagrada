@@ -7,14 +7,15 @@ const LikeButton = ({ postId }) => {
     const [liked, setLiked] = useState(false);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user.id || user.userId;
 
     useEffect(() => {
         const fetchLikes = async () => {
             try {
                 const response = await api.get(`/likes/${postId}/likes`);
                 setLikes(response.data.length);
-                if (user.userId) {
-                    const userLiked = response.data.some(like => like.userId === user.userId);
+                if (userId) {
+                    const userLiked = response.data.some(like => like.userId === userId);
                     setLiked(userLiked);
                 }
             } catch (error) {
@@ -22,18 +23,18 @@ const LikeButton = ({ postId }) => {
             }
         };
         fetchLikes();
-    }, [postId, user.userId]);
+    }, [postId, userId]);
 
     const handleToggleLike = async () => {
-        if (!user.userId) return;
+        if (!userId) return;
 
         try {
             if (liked) {
-                await api.delete(`/likes/${postId}/unlike`, { data: { userId: user.userId } });
+                await api.delete(`/likes/${postId}/unlike`, { data: { userId } });
                 setLikes(likes - 1);
                 setLiked(false);
             } else {
-                await api.post(`/likes/${postId}/like`, { userId: user.userId });
+                await api.post(`/likes/${postId}/like`, { userId });
                 setLikes(likes + 1);
                 setLiked(true);
             }

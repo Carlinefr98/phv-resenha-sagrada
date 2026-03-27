@@ -53,7 +53,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 // Get all posts
 router.get('/', async (req, res) => {
     try {
-        const posts = await Post.findAll({ include: Image });
+        const posts = await Post.findAll({ include: Image, order: [['createdAt', 'DESC']] });
         res.json(posts);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve posts' });
