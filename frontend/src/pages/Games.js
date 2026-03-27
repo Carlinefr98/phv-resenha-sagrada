@@ -284,7 +284,7 @@ const MomentoKszei = () => {
 const SI_WIDTH = 400;
 const SI_HEIGHT = 500;
 
-const SpaceInvaders = () => {
+const SpaceInvaders = ({ adminMode }) => {
     const canvasRef = useRef(null);
     const { user } = useContext(AuthContext);
     const [gameRunning, setGameRunning] = useState(false);
@@ -551,7 +551,7 @@ const SpaceInvaders = () => {
             <h2 className="game-section-title">👾 Space Invaders PHV</h2>
             <p className="game-desc">Derrote 3 chefões para vencer! Use ← → para mover e ESPAÇO para atirar.</p>
 
-            {user && user.isAdmin && (
+            {user && user.isAdmin && adminMode && (
                 <div className="boss-config">
                     <h4>⚙️ Configurar Chefões (Admin)</h4>
                     <div className="boss-config-grid">
@@ -600,7 +600,7 @@ const LM_SPEED = 3;
 const LM_AI_SPEED = 2.2;
 const LM_CATCH_DIST = 20;
 
-const LauraMariana = () => {
+const LauraMariana = ({ adminMode }) => {
     const canvasRef = useRef(null);
     const { user } = useContext(AuthContext);
     const [gameRunning, setGameRunning] = useState(false);
@@ -850,7 +850,7 @@ const LauraMariana = () => {
 
             <audio ref={audioRef} />
 
-            {user && user.isAdmin && (
+            {user && user.isAdmin && adminMode && (
                 <div className="boss-config">
                     <h4>⚙️ Configurar Personagens (Admin)</h4>
                     <div className="boss-config-grid">
@@ -918,22 +918,51 @@ const LauraMariana = () => {
 // ==================== MAIN GAMES PAGE ====================
 const Games = () => {
     const [activeTab, setActiveTab] = useState('snake');
+    const [loading, setLoading] = useState(false);
+    const [adminMode, setAdminMode] = useState(false);
+    const { user } = useContext(AuthContext);
+
+    const switchTab = (tab) => {
+        if (tab === activeTab) return;
+        setLoading(true);
+        setActiveTab(tab);
+        setTimeout(() => setLoading(false), 400);
+    };
 
     return (
         <div className="games-page">
             <h1 className="games-title">🎮 Jogos PHV</h1>
+
+            {user && user.isAdmin && (
+                <div className="games-admin-bar">
+                    <button className="games-admin-toggle" onClick={() => setAdminMode(!adminMode)}>
+                        {adminMode ? '🔒 Sair do modo Admin' : '🔧 Modo Admin'}
+                    </button>
+                </div>
+            )}
+
             <div className="games-tabs">
-                <button className={`game-tab ${activeTab === 'snake' ? 'active' : ''}`} onClick={() => setActiveTab('snake')}>🐍 Cobrinha</button>
-                <button className={`game-tab ${activeTab === 'danny' ? 'active' : ''}`} onClick={() => setActiveTab('danny')}>🙈 Danny</button>
-                <button className={`game-tab ${activeTab === 'kszei' ? 'active' : ''}`} onClick={() => setActiveTab('kszei')}>😈 Kszei</button>
-                <button className={`game-tab ${activeTab === 'invaders' ? 'active' : ''}`} onClick={() => setActiveTab('invaders')}>👾 Invaders</button>
-                <button className={`game-tab ${activeTab === 'laura' ? 'active' : ''}`} onClick={() => setActiveTab('laura')}>💕 Laura & Mariana</button>
+                <button className={`game-tab ${activeTab === 'snake' ? 'active' : ''}`} onClick={() => switchTab('snake')}>🐍 Cobrinha</button>
+                <button className={`game-tab ${activeTab === 'danny' ? 'active' : ''}`} onClick={() => switchTab('danny')}>🙈 Danny</button>
+                <button className={`game-tab ${activeTab === 'kszei' ? 'active' : ''}`} onClick={() => switchTab('kszei')}>😈 Kszei</button>
+                <button className={`game-tab ${activeTab === 'invaders' ? 'active' : ''}`} onClick={() => switchTab('invaders')}>👾 Invaders</button>
+                <button className={`game-tab ${activeTab === 'laura' ? 'active' : ''}`} onClick={() => switchTab('laura')}>💕 Laura & Mariana</button>
             </div>
-            {activeTab === 'snake' && <SnakeGame />}
-            {activeTab === 'danny' && <DannyExcuses />}
-            {activeTab === 'kszei' && <MomentoKszei />}
-            {activeTab === 'invaders' && <SpaceInvaders />}
-            {activeTab === 'laura' && <LauraMariana />}
+
+            {loading ? (
+                <div className="games-loading">
+                    <div className="games-loading-spinner"></div>
+                    <p>Carregando...</p>
+                </div>
+            ) : (
+                <>
+                    {activeTab === 'snake' && <SnakeGame />}
+                    {activeTab === 'danny' && <DannyExcuses />}
+                    {activeTab === 'kszei' && <MomentoKszei />}
+                    {activeTab === 'invaders' && <SpaceInvaders adminMode={adminMode} />}
+                    {activeTab === 'laura' && <LauraMariana adminMode={adminMode} />}
+                </>
+            )}
         </div>
     );
 };
