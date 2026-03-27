@@ -44,10 +44,22 @@ const Navbar = () => {
                     <Link to="/" onClick={() => setMenuOpen(false)}>
                         <span className="nav-emoji">&#127968;</span> Feed
                     </Link>
+                    <Link to="/museu" onClick={() => setMenuOpen(false)}>
+                        <span className="nav-emoji">🏛️</span> Museu
+                    </Link>
+                    <Link to="/jogos" onClick={() => setMenuOpen(false)}>
+                        <span className="nav-emoji">🎮</span> Jogos
+                    </Link>
+                    <Link to="/eventos" onClick={() => setMenuOpen(false)}>
+                        <span className="nav-emoji">📅</span> Eventos
+                    </Link>
                     {user ? (
                         <>
                             <Link to="/create" onClick={() => setMenuOpen(false)}>
                                 <span className="nav-emoji">&#10133;</span> Criar Post
+                            </Link>
+                            <Link to="/perfil" onClick={() => setMenuOpen(false)}>
+                                <span className="nav-emoji">🏆</span> Perfil
                             </Link>
                             <div className="navbar-user-area">
                                 <span className="navbar-welcome">

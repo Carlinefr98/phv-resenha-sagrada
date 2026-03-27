@@ -7,6 +7,11 @@ const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const likeRoutes = require('./routes/likes');
+const snakeRoutes = require('./routes/snake');
+const museumRoutes = require('./routes/museum');
+const eventRoutes = require('./routes/events');
+const badgeRoutes = require('./routes/badges');
+const memoryRoutes = require('./routes/memories');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +36,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/likes', likeRoutes);
+app.use('/api/snake', snakeRoutes);
+app.use('/api/museum', museumRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/badges', badgeRoutes);
+app.use('/api/memories', memoryRoutes);
 
 // Sync database and start server
 sequelize.sync().then(() => {

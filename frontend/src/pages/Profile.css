@@ -1,0 +1,133 @@
+.profile-page {
+    max-width: 700px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F1A416, #2095A2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 auto 12px;
+    box-shadow: 0 4px 20px rgba(241, 164, 22, 0.3);
+}
+
+.profile-username {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #F1A416;
+}
+
+.profile-login-msg {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 40px;
+}
+
+.profile-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #F1A416;
+    margin-bottom: 20px;
+}
+
+.badges-title {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #F1A416, #E73B43);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+}
+
+.profile-loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.profile-loading .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(241, 164, 22, 0.2);
+    border-top-color: #F1A416;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.badge-card {
+    position: relative;
+    background: rgba(241, 164, 22, 0.05);
+    border: 1px solid rgba(241, 164, 22, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.badge-card.earned {
+    border-color: rgba(241, 164, 22, 0.4);
+    box-shadow: 0 0 15px rgba(241, 164, 22, 0.1);
+}
+
+.badge-card.earned:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 25px rgba(241, 164, 22, 0.2);
+}
+
+.badge-card.locked {
+    opacity: 0.4;
+    filter: grayscale(60%);
+}
+
+.badge-emoji {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.badge-name {
+    color: #F1A416;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.badge-desc {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+}
+
+.badge-lock {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 1rem;
+}
+
+.no-badges {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    grid-column: 1 / -1;
+}

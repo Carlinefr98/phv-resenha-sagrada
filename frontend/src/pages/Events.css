@@ -1,0 +1,200 @@
+.events-page {
+    max-width: 700px;
+    margin: 100px auto 40px;
+    padding: 0 20px;
+}
+
+.events-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #F1A416, #2095A2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 30px;
+}
+
+.events-create-area {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.events-toggle-btn {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #F1A416, #2095A2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.events-toggle-btn:hover { transform: scale(1.05); }
+
+.events-form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.events-form input, .events-form textarea {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(241, 164, 22, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.95rem;
+    font-family: 'League Spartan', sans-serif;
+}
+
+.events-form input:focus, .events-form textarea:focus {
+    border-color: #2095A2;
+    outline: none;
+    box-shadow: 0 0 10px rgba(32, 149, 162, 0.3);
+}
+
+.events-submit-btn {
+    padding: 12px;
+    background: linear-gradient(135deg, #2095A2, #F1A416);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.events-loading, .events-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 40px;
+}
+
+.events-loading .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(241, 164, 22, 0.2);
+    border-top-color: #F1A416;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.event-card {
+    background: rgba(241, 164, 22, 0.05);
+    border: 1px solid rgba(241, 164, 22, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.event-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(241, 164, 22, 0.1);
+}
+
+.event-card.past { opacity: 0.6; }
+
+.event-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.event-date-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: white;
+}
+
+.event-date-badge.upcoming { background: linear-gradient(135deg, #2095A2, #F1A416); }
+.event-date-badge.past { background: rgba(255, 255, 255, 0.15); }
+
+.event-past-label {
+    font-size: 0.75rem;
+    color: #E73B43;
+    font-weight: 600;
+}
+
+.event-name {
+    color: #F1A416;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.event-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.event-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.event-participants-count {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+}
+
+.event-join-btn {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #2095A2, #F1A416);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.event-cancel-btn {
+    padding: 8px 16px;
+    background: rgba(231, 59, 67, 0.15);
+    border: 1px solid rgba(231, 59, 67, 0.3);
+    border-radius: 6px;
+    color: #E73B43;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.event-participants-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.participant-tag {
+    background: rgba(32, 149, 162, 0.15);
+    color: #2095A2;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.event-creator {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.75rem;
+}

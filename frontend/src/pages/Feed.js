@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api';
 import PostCard from '../components/PostCard';
+import Memories from '../components/Memories';
 import './Feed.css';
 
 const Feed = () => {
@@ -34,6 +35,7 @@ const Feed = () => {
                 </p>
             </div>
             <div className="post-list">
+                <Memories />
                 {loading ? (
                     <div className="feed-loading">
                         <div className="loading-spinner"></div>

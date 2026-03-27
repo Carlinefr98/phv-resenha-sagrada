@@ -7,6 +7,10 @@ import PostDetail from './pages/PostDetail';
 import CreatePost from './pages/CreatePost';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Games from './pages/Games';
+import Museum from './pages/Museum';
+import Events from './pages/Events';
+import Profile from './pages/Profile';
 import './App.css';
 
 function App() {
@@ -20,6 +24,10 @@ function App() {
           <Route path="/create" component={CreatePost} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
+          <Route path="/jogos" component={Games} />
+          <Route path="/museu" component={Museum} />
+          <Route path="/eventos" component={Events} />
+          <Route path="/perfil" component={Profile} />
         </Switch>
       </AuthProvider>
     </Router>
