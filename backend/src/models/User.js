@@ -14,6 +14,18 @@ const User = sequelize.define('User', {
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+    },
+    profilePhoto: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    bio: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    birthday: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
     }
 });
 

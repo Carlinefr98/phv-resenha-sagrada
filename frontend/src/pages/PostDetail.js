@@ -49,7 +49,14 @@ const PostDetail = () => {
         return match ? match[1] : null;
     };
 
+    const getDriveId = (url) => {
+        if (!url) return null;
+        const match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
     const ytId = getYoutubeId(post.videoUrl);
+    const driveId = getDriveId(post.videoUrl);
 
     return (
         <div className="post-detail">
@@ -74,6 +81,26 @@ const PostDetail = () => {
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
                         ></iframe>
+                    </div>
+                )}
+                {driveId && (
+                    <div className="post-detail-video">
+                        <iframe
+                            width="100%" height="400"
+                            src={`https://drive.google.com/file/d/${driveId}/preview`}
+                            title={post.title}
+                            frameBorder="0"
+                            allow="autoplay; encrypted-media"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                )}
+                {post.videoUrl && !ytId && !driveId && (
+                    <div className="post-detail-video">
+                        <video width="100%" controls>
+                            <source src={post.videoUrl} />
+                            Seu navegador não suporta vídeo.
+                        </video>
                     </div>
                 )}
                 <div className="post-detail-body">

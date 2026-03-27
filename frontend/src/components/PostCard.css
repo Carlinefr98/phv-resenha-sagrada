@@ -48,6 +48,36 @@
     backdrop-filter: blur(4px);
 }
 
+.post-card-video-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.post-card-video-placeholder {
+    background: linear-gradient(135deg, rgba(32, 149, 162, 0.2), rgba(241, 164, 22, 0.2));
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-card-play-icon {
+    font-size: 3rem;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.82rem;
+}
+
 .post-card-body {
     padding: 20px;
 }

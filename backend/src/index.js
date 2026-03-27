@@ -13,6 +13,7 @@ const eventRoutes = require('./routes/events');
 const badgeRoutes = require('./routes/badges');
 const memoryRoutes = require('./routes/memories');
 const adminRoutes = require('./routes/admin');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +44,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/badges', badgeRoutes);
 app.use('/api/memories', memoryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Sync database and start server
 sequelize.sync().then(() => {

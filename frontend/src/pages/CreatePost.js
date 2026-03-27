@@ -89,13 +89,14 @@ const CreatePost = () => {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label>Vídeo (opcional — cole link do YouTube)</label>
+                        <label>Vídeo (opcional — link do Google Drive ou YouTube)</label>
                         <input
                             type="url"
                             value={videoUrl}
                             onChange={(e) => setVideoUrl(e.target.value)}
-                            placeholder="https://www.youtube.com/watch?v=..."
+                            placeholder="https://drive.google.com/file/d/... ou YouTube"
                         />
+                        <small className="form-hint">💡 No Drive: botão direito → Compartilhar → Qualquer pessoa com o link</small>
                     </div>
                     <button type="submit" className="create-post-btn" disabled={loading}>
                         {loading ? 'Postando...' : '🚀 Postar Resenha'}

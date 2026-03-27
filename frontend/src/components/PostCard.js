@@ -20,6 +20,7 @@ const PostCard = ({ post }) => {
     };
 
     const ytId = getYoutubeId(post.videoUrl);
+    const hasVideo = !!post.videoUrl;
 
     return (
         <div className="post-card">
@@ -30,11 +31,18 @@ const PostCard = ({ post }) => {
                         {imageCount > 1 && (
                             <span className="post-card-image-count">📷 {imageCount} fotos</span>
                         )}
+                        {hasVideo && <span className="post-card-video-badge">▶️</span>}
                     </div>
                 )}
                 {!firstImage && ytId && (
                     <div className="post-card-image-wrapper">
                         <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt={post.title} className="post-card-image" />
+                        <span className="post-card-image-count">▶️ Vídeo</span>
+                    </div>
+                )}
+                {!firstImage && hasVideo && !ytId && (
+                    <div className="post-card-image-wrapper post-card-video-placeholder">
+                        <span className="post-card-play-icon">🎬</span>
                         <span className="post-card-image-count">▶️ Vídeo</span>
                     </div>
                 )}
