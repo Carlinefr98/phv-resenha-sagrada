@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../api';
 import './Carousel.css';
 
 const Carousel = ({ images }) => {
@@ -9,7 +10,7 @@ const Carousel = ({ images }) => {
     const getImageUrl = (url) => {
         if (!url) return '';
         if (url.startsWith('http')) return url;
-        return `http://localhost:5000/${url}`;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
     };
 
     const prev = () => setCurrent(current === 0 ? images.length - 1 : current - 1);

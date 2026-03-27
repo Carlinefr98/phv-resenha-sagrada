@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import api from '../api';
 import './PostCard.css';
 
 const PostCard = ({ post }) => {
@@ -9,7 +10,7 @@ const PostCard = ({ post }) => {
     const getImageUrl = (url) => {
         if (!url) return null;
         if (url.startsWith('http')) return url;
-        return `http://localhost:5000/${url}`;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
     };
 
     return (

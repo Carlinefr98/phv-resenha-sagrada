@@ -2,24 +2,31 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { cloudinary, storage: cloudStorage } = require('../cloudinary');
 const { Post, Image } = require('../models');
 
 const router = express.Router();
 
-const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: uploadsDir,
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = path.extname(file.originalname);
-        cb(null, uniqueName + ext);
+let upload;
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+    // Production: use Cloudinary
+    upload = multer({ storage: cloudStorage });
+} else {
+    // Local: use disk storage
+    const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
     }
-});
-const upload = multer({ storage });
+    const diskStorage = multer.diskStorage({
+        destination: uploadsDir,
+        filename: (req, file, cb) => {
+            const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = path.extname(file.originalname);
+            cb(null, uniqueName + ext);
+        }
+    });
+    upload = multer({ storage: diskStorage });
+}
 
 // Create a new post
 router.post('/', upload.array('images', 5), async (req, res) => {
@@ -30,7 +37,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         if (req.files && req.files.length > 0) {
             const images = req.files.map(file => ({
                 postId: post.id,
-                url: 'uploads/' + file.filename
+                url: file.path && file.path.startsWith('http') ? file.path : (file.filename ? 'uploads/' + file.filename : file.path)
             }));
             await Image.bulkCreate(images);
         }
