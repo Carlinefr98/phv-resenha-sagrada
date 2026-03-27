@@ -23,14 +23,14 @@ const CommentSection = ({ postId }) => {
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!newComment.trim() || !user.token) return;
         setLoading(true);
 
         try {
             const response = await api.post(`/comments/${postId}`, {
                 author: user.username || 'Anônimo',
                 content: newComment
-            });
+            }, { headers: { Authorization: `Bearer ${user.token}` } });
             setComments([...comments, response.data]);
             setNewComment('');
         } catch (error) {
@@ -43,6 +43,7 @@ const CommentSection = ({ postId }) => {
     return (
         <div className="comment-section">
             <h3 className="comment-section-title">💬 Comentários ({comments.length})</h3>
+            {user.token ? (
             <form onSubmit={handleCommentSubmit} className="comment-form">
                 <input
                     type="text"
@@ -55,6 +56,9 @@ const CommentSection = ({ postId }) => {
                     {loading ? '...' : 'Enviar'}
                 </button>
             </form>
+            ) : (
+            <p className="comment-login-msg">Faça login para comentar.</p>
+            )}
             <ul className="comment-list">
                 {comments.map((comment) => (
                     <li key={comment.id} className="comment-item">

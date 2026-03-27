@@ -10,6 +10,7 @@ const Museum = () => {
     const [showForm, setShowForm] = useState(false);
     const [form, setForm] = useState({ title: '', description: '', date: '' });
     const [image, setImage] = useState(null);
+    const [audio, setAudio] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [adminMode, setAdminMode] = useState(false);
 
@@ -38,11 +39,13 @@ const Museum = () => {
             formData.append('description', form.description);
             formData.append('date', form.date);
             if (image) formData.append('image', image);
+            if (audio) formData.append('audio', audio);
             await api.post('/museum', formData, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
             });
             setForm({ title: '', description: '', date: '' });
             setImage(null);
+            setAudio(null);
             setShowForm(false);
             fetchEvents();
         } catch (err) { console.error(err); }
@@ -89,6 +92,10 @@ const Museum = () => {
                                 <input type="file" accept="image/*" id="museum-img" onChange={e => setImage(e.target.files[0])} />
                                 <label htmlFor="museum-img">📷 {image ? image.name : 'Escolher foto'}</label>
                             </div>
+                            <div className="museum-file-input">
+                                <input type="file" accept="audio/*" id="museum-audio" onChange={e => setAudio(e.target.files[0])} />
+                                <label htmlFor="museum-audio">🎵 {audio ? audio.name : 'Escolher áudio (opcional)'}</label>
+                            </div>
                             <button type="submit" disabled={submitting}>
                                 {submitting ? 'Salvando...' : '🚀 Salvar Momento'}
                             </button>
@@ -123,6 +130,11 @@ const Museum = () => {
                                 <p className="timeline-card-desc">{event.description}</p>
                                 {event.imageUrl && (
                                     <img src={getImageUrl(event.imageUrl)} alt={event.title} className="timeline-img" />
+                                )}
+                                {event.audioUrl && (
+                                    <audio controls className="timeline-audio">
+                                        <source src={getImageUrl(event.audioUrl)} />
+                                    </audio>
                                 )}
                             </div>
                         </div>

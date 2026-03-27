@@ -293,6 +293,7 @@ const SpaceInvaders = () => {
     const [level, setLevel] = useState(1);
     const [bosses, setBosses] = useState([]);
     const [bossImages, setBossImages] = useState({});
+    const [uploadingBoss, setUploadingBoss] = useState(null);
     const gameRef = useRef(null);
 
     const getImageUrl = (url) => {
@@ -320,6 +321,7 @@ const SpaceInvaders = () => {
     const handleBossUpload = async (bossId, file) => {
         const formData = new FormData();
         formData.append('image', file);
+        setUploadingBoss(bossId);
         try {
             const res = await api.put(`/games/bosses/${bossId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
@@ -332,6 +334,7 @@ const SpaceInvaders = () => {
                 setBossImages(prev => ({ ...prev, [bossId]: img }));
             }
         } catch (e) { console.error(e); }
+        setUploadingBoss(null);
     };
 
     const startGame = () => {
@@ -555,9 +558,11 @@ const SpaceInvaders = () => {
                         {bosses.map(b => (
                             <div key={b.id} className="boss-config-item">
                                 <span>{b.name}</span>
-                                {b.imageUrl ? <img src={getImageUrl(b.imageUrl)} alt={b.name} className="boss-preview" /> :
+                                {uploadingBoss === b.id ? (
+                                    <div className="boss-uploading">⏳ Enviando...</div>
+                                ) : b.imageUrl ? <img src={getImageUrl(b.imageUrl)} alt={b.name} className="boss-preview" /> :
                                     <div className="boss-preview-empty">👾</div>}
-                                <input type="file" accept="image/*" onChange={e => e.target.files[0] && handleBossUpload(b.id, e.target.files[0])} />
+                                <input type="file" accept="image/*" disabled={uploadingBoss === b.id} onChange={e => e.target.files[0] && handleBossUpload(b.id, e.target.files[0])} />
                             </div>
                         ))}
                     </div>
@@ -587,6 +592,329 @@ const SpaceInvaders = () => {
     );
 };
 
+// ==================== LAURA E MARIANA ====================
+const LM_WIDTH = 400;
+const LM_HEIGHT = 400;
+const LM_PLAYER_SIZE = 30;
+const LM_SPEED = 3;
+const LM_AI_SPEED = 2.2;
+const LM_CATCH_DIST = 20;
+
+const LauraMariana = () => {
+    const canvasRef = useRef(null);
+    const { user } = useContext(AuthContext);
+    const [gameRunning, setGameRunning] = useState(false);
+    const [caught, setCaught] = useState(false);
+    const [assets, setAssets] = useState({ lauraImg: null, marianaImg: null, musicUrl: null });
+    const [uploadingAsset, setUploadingAsset] = useState(null);
+    const gameRef = useRef(null);
+    const audioRef = useRef(null);
+    const lauraImgRef = useRef(null);
+    const marianaImgRef = useRef(null);
+
+    const getAssetUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
+    };
+
+    useEffect(() => {
+        api.get('/games/assets').then(res => {
+            setAssets(res.data);
+            if (res.data.lauraImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.lauraImg);
+                lauraImgRef.current = img;
+            }
+            if (res.data.marianaImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.marianaImg);
+                marianaImgRef.current = img;
+            }
+        }).catch(e => console.error(e));
+    }, []);
+
+    const handleAssetUpload = async (type, file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        setUploadingAsset(type);
+        try {
+            const res = await api.put(`/games/assets/${type}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
+            });
+            setAssets(res.data);
+            if (type === 'laura' && res.data.lauraImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.lauraImg);
+                lauraImgRef.current = img;
+            }
+            if (type === 'mariana' && res.data.marianaImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.marianaImg);
+                marianaImgRef.current = img;
+            }
+        } catch (e) { console.error(e); }
+        setUploadingAsset(null);
+    };
+
+    const startGame = () => {
+        setCaught(false);
+        setGameRunning(true);
+        const state = {
+            laura: { x: 50, y: LM_HEIGHT / 2 },
+            mariana: { x: LM_WIDTH - 80, y: LM_HEIGHT / 2 },
+            keys: {},
+            hearts: [],
+        };
+        // Decorative hearts
+        for (let i = 0; i < 8; i++) {
+            state.hearts.push({
+                x: Math.random() * LM_WIDTH,
+                y: Math.random() * LM_HEIGHT,
+                size: 8 + Math.random() * 12,
+                speed: 0.3 + Math.random() * 0.5,
+            });
+        }
+        gameRef.current = state;
+
+        // Play music
+        if (assets.musicUrl && audioRef.current) {
+            audioRef.current.src = getAssetUrl(assets.musicUrl);
+            audioRef.current.loop = true;
+            audioRef.current.volume = 0.5;
+            audioRef.current.play().catch(() => {});
+        }
+    };
+
+    const stopMusic = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+    };
+
+    useEffect(() => {
+        if (!gameRunning) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const state = gameRef.current;
+
+        const keyDown = (e) => { state.keys[e.key] = true; };
+        const keyUp = (e) => { state.keys[e.key] = false; };
+        window.addEventListener('keydown', keyDown);
+        window.addEventListener('keyup', keyUp);
+
+        const loop = setInterval(() => {
+            // Laura movement (player)
+            if (state.keys['ArrowLeft'] || state.keys['a']) state.laura.x -= LM_SPEED;
+            if (state.keys['ArrowRight'] || state.keys['d']) state.laura.x += LM_SPEED;
+            if (state.keys['ArrowUp'] || state.keys['w']) state.laura.y -= LM_SPEED;
+            if (state.keys['ArrowDown'] || state.keys['s']) state.laura.y += LM_SPEED;
+
+            // Keep Laura in bounds
+            state.laura.x = Math.max(0, Math.min(LM_WIDTH - LM_PLAYER_SIZE, state.laura.x));
+            state.laura.y = Math.max(0, Math.min(LM_HEIGHT - LM_PLAYER_SIZE, state.laura.y));
+
+            // Mariana AI - runs away from Laura with some randomness
+            const dx = state.mariana.x - state.laura.x;
+            const dy = state.mariana.y - state.laura.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist > 0) {
+                // Run away direction
+                let moveX = (dx / dist) * LM_AI_SPEED;
+                let moveY = (dy / dist) * LM_AI_SPEED;
+
+                // Add some zigzag randomness
+                const now = Date.now();
+                moveX += Math.sin(now * 0.003) * 0.8;
+                moveY += Math.cos(now * 0.004) * 0.8;
+
+                // If too close, speed boost
+                if (dist < 100) {
+                    moveX *= 1.3;
+                    moveY *= 1.3;
+                }
+
+                state.mariana.x += moveX;
+                state.mariana.y += moveY;
+            }
+
+            // Keep Mariana in bounds (with bounce)
+            if (state.mariana.x <= 0 || state.mariana.x >= LM_WIDTH - LM_PLAYER_SIZE) {
+                state.mariana.x = Math.max(0, Math.min(LM_WIDTH - LM_PLAYER_SIZE, state.mariana.x));
+            }
+            if (state.mariana.y <= 0 || state.mariana.y >= LM_HEIGHT - LM_PLAYER_SIZE) {
+                state.mariana.y = Math.max(0, Math.min(LM_HEIGHT - LM_PLAYER_SIZE, state.mariana.y));
+            }
+
+            // Check catch
+            const catchDx = state.laura.x - state.mariana.x;
+            const catchDy = state.laura.y - state.mariana.y;
+            if (Math.sqrt(catchDx * catchDx + catchDy * catchDy) < LM_CATCH_DIST) {
+                clearInterval(loop);
+                setGameRunning(false);
+                setCaught(true);
+                stopMusic();
+                window.removeEventListener('keydown', keyDown);
+                window.removeEventListener('keyup', keyUp);
+                return;
+            }
+
+            // Animate hearts
+            state.hearts.forEach(h => {
+                h.y -= h.speed;
+                if (h.y < -20) {
+                    h.y = LM_HEIGHT + 10;
+                    h.x = Math.random() * LM_WIDTH;
+                }
+            });
+
+            // Draw
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, LM_WIDTH, LM_HEIGHT);
+
+            // Draw floating hearts
+            ctx.fillStyle = 'rgba(231, 59, 67, 0.15)';
+            state.hearts.forEach(h => {
+                ctx.font = `${h.size}px sans-serif`;
+                ctx.fillText('💕', h.x, h.y);
+            });
+
+            // Draw Laura (player)
+            const lauraImg = lauraImgRef.current;
+            if (lauraImg && lauraImg.complete && lauraImg.naturalWidth > 0) {
+                ctx.drawImage(lauraImg, state.laura.x, state.laura.y, LM_PLAYER_SIZE, LM_PLAYER_SIZE);
+            } else {
+                ctx.fillStyle = '#E73B43';
+                ctx.beginPath();
+                ctx.arc(state.laura.x + LM_PLAYER_SIZE / 2, state.laura.y + LM_PLAYER_SIZE / 2, LM_PLAYER_SIZE / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px "League Spartan", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('L', state.laura.x + LM_PLAYER_SIZE / 2, state.laura.y + LM_PLAYER_SIZE / 2 + 4);
+            }
+
+            // Draw Mariana (AI)
+            const marianaImg = marianaImgRef.current;
+            if (marianaImg && marianaImg.complete && marianaImg.naturalWidth > 0) {
+                ctx.drawImage(marianaImg, state.mariana.x, state.mariana.y, LM_PLAYER_SIZE, LM_PLAYER_SIZE);
+            } else {
+                ctx.fillStyle = '#2095A2';
+                ctx.beginPath();
+                ctx.arc(state.mariana.x + LM_PLAYER_SIZE / 2, state.mariana.y + LM_PLAYER_SIZE / 2, LM_PLAYER_SIZE / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 10px "League Spartan", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('M', state.mariana.x + LM_PLAYER_SIZE / 2, state.mariana.y + LM_PLAYER_SIZE / 2 + 4);
+            }
+
+            // HUD - distance indicator
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#F1A416';
+            ctx.font = 'bold 12px "League Spartan", sans-serif';
+            ctx.fillText(`Distância: ${Math.round(dist)}`, 10, 20);
+
+        }, 1000 / 60);
+
+        return () => {
+            clearInterval(loop);
+            window.removeEventListener('keydown', keyDown);
+            window.removeEventListener('keyup', keyUp);
+        };
+    }, [gameRunning]);
+
+    // Cleanup music on unmount
+    useEffect(() => {
+        return () => stopMusic();
+    }, []);
+
+    // Mobile controls
+    const move = (key) => {
+        if (gameRef.current) {
+            gameRef.current.keys[key] = true;
+            setTimeout(() => { if (gameRef.current) gameRef.current.keys[key] = false; }, 100);
+        }
+    };
+
+    return (
+        <div className="game-section">
+            <h2 className="game-section-title">💕 Laura & Mariana</h2>
+            <p className="game-desc">A Laura quer pegar a Mariana! Use as setas para se mover.</p>
+
+            <audio ref={audioRef} />
+
+            {user && user.isAdmin && (
+                <div className="boss-config">
+                    <h4>⚙️ Configurar Personagens (Admin)</h4>
+                    <div className="boss-config-grid">
+                        <div className="boss-config-item">
+                            <span>Laura (PNG)</span>
+                            {uploadingAsset === 'laura' ? (
+                                <div className="boss-uploading">⏳ Enviando...</div>
+                            ) : assets.lauraImg ? (
+                                <img src={getAssetUrl(assets.lauraImg)} alt="Laura" className="boss-preview" />
+                            ) : <div className="boss-preview-empty">🔴</div>}
+                            <input type="file" accept="image/*" disabled={uploadingAsset === 'laura'} onChange={e => e.target.files[0] && handleAssetUpload('laura', e.target.files[0])} />
+                        </div>
+                        <div className="boss-config-item">
+                            <span>Mariana (PNG)</span>
+                            {uploadingAsset === 'mariana' ? (
+                                <div className="boss-uploading">⏳ Enviando...</div>
+                            ) : assets.marianaImg ? (
+                                <img src={getAssetUrl(assets.marianaImg)} alt="Mariana" className="boss-preview" />
+                            ) : <div className="boss-preview-empty">🔵</div>}
+                            <input type="file" accept="image/*" disabled={uploadingAsset === 'mariana'} onChange={e => e.target.files[0] && handleAssetUpload('mariana', e.target.files[0])} />
+                        </div>
+                        <div className="boss-config-item">
+                            <span>Música 🎵</span>
+                            {uploadingAsset === 'music' ? (
+                                <div className="boss-uploading">⏳ Enviando...</div>
+                            ) : assets.musicUrl ? (
+                                <div className="boss-preview-empty">🎶</div>
+                            ) : <div className="boss-preview-empty">🔇</div>}
+                            <input type="file" accept="audio/*" disabled={uploadingAsset === 'music'} onChange={e => e.target.files[0] && handleAssetUpload('music', e.target.files[0])} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="lm-canvas-wrapper">
+                <canvas ref={canvasRef} width={LM_WIDTH} height={LM_HEIGHT} className="lm-canvas" />
+                {!gameRunning && (
+                    <div className="lm-overlay">
+                        {caught ? (
+                            <div className="lm-caught">
+                                <p className="lm-caught-text">💕 Agora você está namorando! 💕</p>
+                                <p className="lm-caught-sub">Laura pegou a Mariana!</p>
+                            </div>
+                        ) : (
+                            <p className="snake-start-text">💕 Laura & Mariana</p>
+                        )}
+                        <button className="snake-start-btn" onClick={startGame}>
+                            {caught ? 'Jogar Novamente' : 'Iniciar Jogo'}
+                        </button>
+                    </div>
+                )}
+            </div>
+            <div className="lm-mobile-controls">
+                <button onClick={() => move('ArrowUp')}>▲</button>
+                <div>
+                    <button onClick={() => move('ArrowLeft')}>◄</button>
+                    <button onClick={() => move('ArrowRight')}>►</button>
+                </div>
+                <button onClick={() => move('ArrowDown')}>▼</button>
+            </div>
+        </div>
+    );
+};
+
 // ==================== MAIN GAMES PAGE ====================
 const Games = () => {
     const [activeTab, setActiveTab] = useState('snake');
@@ -599,11 +927,13 @@ const Games = () => {
                 <button className={`game-tab ${activeTab === 'danny' ? 'active' : ''}`} onClick={() => setActiveTab('danny')}>🙈 Danny</button>
                 <button className={`game-tab ${activeTab === 'kszei' ? 'active' : ''}`} onClick={() => setActiveTab('kszei')}>😈 Kszei</button>
                 <button className={`game-tab ${activeTab === 'invaders' ? 'active' : ''}`} onClick={() => setActiveTab('invaders')}>👾 Invaders</button>
+                <button className={`game-tab ${activeTab === 'laura' ? 'active' : ''}`} onClick={() => setActiveTab('laura')}>💕 Laura & Mariana</button>
             </div>
             {activeTab === 'snake' && <SnakeGame />}
             {activeTab === 'danny' && <DannyExcuses />}
             {activeTab === 'kszei' && <MomentoKszei />}
             {activeTab === 'invaders' && <SpaceInvaders />}
+            {activeTab === 'laura' && <LauraMariana />}
         </div>
     );
 };

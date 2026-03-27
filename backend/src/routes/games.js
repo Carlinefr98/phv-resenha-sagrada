@@ -7,9 +7,11 @@ const adminMiddleware = require('../middleware/admin');
 const router = express.Router();
 
 let upload;
+let audioUpload;
 if (process.env.CLOUDINARY_CLOUD_NAME) {
-    const { storage: cloudStorage } = require('../cloudinary');
+    const { storage: cloudStorage, audioStorage } = require('../cloudinary');
     upload = multer({ storage: cloudStorage });
+    audioUpload = multer({ storage: audioStorage });
 } else {
     const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
@@ -20,6 +22,7 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
         }
     });
     upload = multer({ storage: diskStorage });
+    audioUpload = multer({ storage: diskStorage });
 }
 
 // In-memory boss storage (persists until server restart, admin can re-upload)
@@ -29,9 +32,21 @@ let bosses = [
     { id: 3, name: 'Boss 3', imageUrl: null },
 ];
 
+// Laura e Mariana game assets
+let gameAssets = {
+    lauraImg: null,
+    marianaImg: null,
+    musicUrl: null,
+};
+
 // Get bosses
 router.get('/bosses', (req, res) => {
     res.json(bosses);
+});
+
+// Get game assets (Laura e Mariana)
+router.get('/assets', (req, res) => {
+    res.json(gameAssets);
 });
 
 // Update boss image (admin only)
@@ -46,6 +61,29 @@ router.put('/bosses/:id', adminMiddleware, upload.single('image'), (req, res) =>
             : (req.file.filename ? 'uploads/' + req.file.filename : req.file.path);
     }
     res.json(boss);
+});
+
+// Upload game asset (admin only) - laura, mariana, or music
+router.put('/assets/:type', adminMiddleware, (req, res, next) => {
+    const { type } = req.params;
+    if (!['laura', 'mariana', 'music'].includes(type)) {
+        return res.status(400).json({ error: 'Invalid asset type' });
+    }
+    const uploader = type === 'music' ? audioUpload : upload;
+    uploader.single('file')(req, res, (err) => {
+        if (err) return res.status(500).json({ error: 'Upload failed' });
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+        const url = req.file.path && req.file.path.startsWith('http')
+            ? req.file.path
+            : (req.file.filename ? 'uploads/' + req.file.filename : req.file.path);
+
+        if (type === 'laura') gameAssets.lauraImg = url;
+        else if (type === 'mariana') gameAssets.marianaImg = url;
+        else if (type === 'music') gameAssets.musicUrl = url;
+
+        res.json(gameAssets);
+    });
 });
 
 module.exports = router;

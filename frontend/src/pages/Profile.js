@@ -14,6 +14,11 @@ const Profile = () => {
     const [birthday, setBirthday] = useState('');
     const [photo, setPhoto] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [changingPw, setChangingPw] = useState(false);
+    const [currentPw, setCurrentPw] = useState('');
+    const [newPw, setNewPw] = useState('');
+    const [pwMsg, setPwMsg] = useState('');
+    const [pwError, setPwError] = useState('');
 
     const fetchData = async () => {
         if (!user || !user.username) { setLoading(false); return; }
@@ -60,6 +65,20 @@ const Profile = () => {
     };
 
     const hasBadge = (badgeId) => userBadges.some(b => b.id === badgeId);
+
+    const handleChangePassword = async (e) => {
+        e.preventDefault();
+        setPwMsg(''); setPwError('');
+        try {
+            await api.put('/auth/change-password', { currentPassword: currentPw, newPassword: newPw }, {
+                headers: { Authorization: `Bearer ${user.token}` }
+            });
+            setPwMsg('Senha alterada com sucesso!');
+            setCurrentPw(''); setNewPw(''); setChangingPw(false);
+        } catch (e) {
+            setPwError(e.response?.data?.message || 'Erro ao alterar senha');
+        }
+    };
 
     const formatBirthday = (dateStr) => {
         if (!dateStr) return null;
@@ -131,6 +150,27 @@ const Profile = () => {
                             </button>
                         </form>
                     )}
+
+                    <div className="profile-password-section">
+                        <button className="profile-edit-btn" onClick={() => { setChangingPw(!changingPw); setPwMsg(''); setPwError(''); }}>
+                            {changingPw ? '✕ Cancelar' : '🔑 Trocar Senha'}
+                        </button>
+                        {pwMsg && <p className="pw-success">{pwMsg}</p>}
+                        {pwError && <p className="pw-error">{pwError}</p>}
+                        {changingPw && (
+                            <form className="profile-edit-form" onSubmit={handleChangePassword}>
+                                <div className="profile-form-group">
+                                    <label>Senha atual</label>
+                                    <input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} required />
+                                </div>
+                                <div className="profile-form-group">
+                                    <label>Nova senha</label>
+                                    <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} required />
+                                </div>
+                                <button type="submit" className="profile-save-btn">💾 Alterar Senha</button>
+                            </form>
+                        )}
+                    </div>
 
                     <h2 className="badges-title">🏆 Badges</h2>
                     <div className="badges-grid">

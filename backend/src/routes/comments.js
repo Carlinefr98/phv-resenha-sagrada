@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Comment } = require('../models');
+const authMiddleware = require('../middleware/auth');
 
 // Get comments for a specific post
 router.get('/:postId', async (req, res) => {
@@ -13,8 +14,8 @@ router.get('/:postId', async (req, res) => {
     }
 });
 
-// Add a new comment to a post
-router.post('/:postId', async (req, res) => {
+// Add a new comment to a post (auth required)
+router.post('/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { author, content } = req.body;
     try {

@@ -8,8 +8,8 @@ const router = express.Router();
 
 let upload;
 if (process.env.CLOUDINARY_CLOUD_NAME) {
-    const { storage: cloudStorage } = require('../cloudinary');
-    upload = multer({ storage: cloudStorage });
+    const { mixedStorage } = require('../cloudinary');
+    upload = multer({ storage: mixedStorage });
 } else {
     const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
     if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
@@ -34,15 +34,21 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Create museum event (admin only, with image upload)
-router.post('/', adminMiddleware, upload.single('image'), async (req, res) => {
+// Create museum event (admin only, with image + audio upload)
+router.post('/', adminMiddleware, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
     try {
         const { title, description, date } = req.body;
         let imageUrl = req.body.imageUrl || null;
-        if (req.file) {
-            imageUrl = req.file.path && req.file.path.startsWith('http') ? req.file.path : (req.file.filename ? 'uploads/' + req.file.filename : req.file.path);
+        let audioUrl = req.body.audioUrl || null;
+        if (req.files && req.files.image && req.files.image[0]) {
+            const f = req.files.image[0];
+            imageUrl = f.path && f.path.startsWith('http') ? f.path : (f.filename ? 'uploads/' + f.filename : f.path);
         }
-        const event = await MuseumEvent.create({ title, description, date, imageUrl });
+        if (req.files && req.files.audio && req.files.audio[0]) {
+            const f = req.files.audio[0];
+            audioUrl = f.path && f.path.startsWith('http') ? f.path : (f.filename ? 'uploads/' + f.filename : f.path);
+        }
+        const event = await MuseumEvent.create({ title, description, date, imageUrl, audioUrl });
         res.status(201).json(event);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create museum event' });

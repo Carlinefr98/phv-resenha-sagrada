@@ -16,4 +16,31 @@ const storage = new CloudinaryStorage({
     }
 });
 
-module.exports = { cloudinary, storage };
+const audioStorage = new CloudinaryStorage({
+    cloudinary,
+    params: {
+        folder: 'phv-resenha-audio',
+        resource_type: 'auto',
+        allowed_formats: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'webm']
+    }
+});
+
+const mixedStorage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => {
+        if (file.mimetype.startsWith('audio/')) {
+            return {
+                folder: 'phv-resenha-audio',
+                resource_type: 'auto',
+                allowed_formats: ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'webm']
+            };
+        }
+        return {
+            folder: 'phv-resenha',
+            allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+            transformation: [{ width: 1200, quality: 'auto' }]
+        };
+    }
+});
+
+module.exports = { cloudinary, storage, audioStorage, mixedStorage };
