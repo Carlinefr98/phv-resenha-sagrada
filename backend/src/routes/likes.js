@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Like } = require('../models');
+const { Like, User } = require('../models');
 
 // Route to like a post
 router.post('/:postId/like', async (req, res) => {
@@ -32,12 +32,15 @@ router.delete('/:postId/unlike', async (req, res) => {
     }
 });
 
-// Route to get likes for a post
+// Route to get likes for a post (with user info)
 router.get('/:postId/likes', async (req, res) => {
     const postId = req.params.postId;
 
     try {
-        const likes = await Like.findAll({ where: { postId } });
+        const likes = await Like.findAll({
+            where: { postId },
+            include: [{ model: User, attributes: ['id', 'username', 'profilePhoto'] }]
+        });
         res.status(200).json(likes);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve likes' });

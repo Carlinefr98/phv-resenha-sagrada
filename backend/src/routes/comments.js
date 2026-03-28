@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { Comment } = require('../models');
+const { Comment, User } = require('../models');
 const authMiddleware = require('../middleware/auth');
 
-// Get comments for a specific post
+// Get comments for a specific post (with user info)
 router.get('/:postId', async (req, res) => {
     const { postId } = req.params;
     try {
-        const comments = await Comment.findAll({ where: { postId } });
+        const comments = await Comment.findAll({
+            where: { postId },
+            include: [{ model: User, attributes: ['id', 'username', 'profilePhoto'] }]
+        });
         res.json(comments);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve comments' });
@@ -19,8 +22,11 @@ router.post('/:postId', authMiddleware, async (req, res) => {
     const { postId } = req.params;
     const { author, content } = req.body;
     try {
-        const comment = await Comment.create({ postId, author, content });
-        res.status(201).json(comment);
+        const comment = await Comment.create({ postId, author, content, userId: req.user.id });
+        const full = await Comment.findByPk(comment.id, {
+            include: [{ model: User, attributes: ['id', 'username', 'profilePhoto'] }]
+        });
+        res.status(201).json(full);
     } catch (error) {
         res.status(500).json({ error: 'Failed to add comment' });
     }

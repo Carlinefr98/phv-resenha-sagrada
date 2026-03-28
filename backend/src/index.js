@@ -49,7 +49,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/games', gamesRoutes);
 
 // Sync database and start server
-sequelize.sync().then(() => {
+sequelize.sync({ alter: true }).then(() => {
     console.log('Database synced successfully.');
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);

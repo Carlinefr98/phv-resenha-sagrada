@@ -50,8 +50,25 @@ const PostCard = ({ post }) => {
                     <h3 className="post-card-title">{post.title}</h3>
                     <p className="post-card-description">{post.description}</p>
                     <div className="post-card-meta">
-                        <Link to={`/perfil/${post.author}`} className="post-card-author" onClick={e => e.stopPropagation()}>✌️ {post.author}</Link>
+                        <Link to={`/perfil/${post.author}`} className="post-card-author" onClick={e => e.stopPropagation()}>
+                            {post.authorPhoto ? (
+                                <img src={getImageUrl(post.authorPhoto)} alt="" className="post-card-author-photo" />
+                            ) : (
+                                <span className="post-card-author-avatar">{post.author.charAt(0).toUpperCase()}</span>
+                            )}
+                            {post.author}
+                        </Link>
                         <span className="post-card-date">{new Date(post.createdAt).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div className="post-card-stats">
+                        <span className="post-card-stat">💬 {post.commentCount || 0}</span>
+                        <span className="post-card-stat">❤️ {post.likeCount || 0}</span>
+                        {post.likeUsers && post.likeUsers.length > 0 && (
+                            <span className="post-card-liked-by">
+                                {post.likeUsers.slice(0, 3).map(u => u.username).join(', ')}
+                                {post.likeUsers.length > 3 && ` +${post.likeUsers.length - 3}`}
+                            </span>
+                        )}
                     </div>
                 </div>
             </Link>

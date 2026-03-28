@@ -1,3 +1,10 @@
+.like-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .like-button {
     display: inline-flex;
     align-items: center;
@@ -46,4 +53,10 @@
 
 .like-count {
     font-weight: 600;
+}
+
+.like-users {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    font-style: italic;
 }

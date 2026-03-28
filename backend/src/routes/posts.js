@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { cloudinary, storage: cloudStorage } = require('../cloudinary');
-const { Post, Image } = require('../models');
+const { Post, Image, Comment, Like, User } = require('../models');
 
 const router = express.Router();
 
@@ -53,8 +53,30 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 // Get all posts
 router.get('/', async (req, res) => {
     try {
-        const posts = await Post.findAll({ include: Image, order: [['createdAt', 'DESC']] });
-        res.json(posts);
+        const posts = await Post.findAll({
+            include: [
+                Image,
+                { model: Comment, attributes: ['id'] },
+                { model: Like, include: [{ model: User, attributes: ['id', 'username', 'profilePhoto'] }] }
+            ],
+            order: [['createdAt', 'DESC']]
+        });
+        // Get all users for author profile photos
+        const users = await User.findAll({ attributes: ['username', 'profilePhoto'] });
+        const userMap = {};
+        users.forEach(u => { userMap[u.username] = u.profilePhoto; });
+
+        const result = posts.map(p => {
+            const pj = p.toJSON();
+            pj.commentCount = pj.Comments ? pj.Comments.length : 0;
+            pj.likeUsers = pj.Likes ? pj.Likes.map(l => l.User).filter(Boolean) : [];
+            pj.likeCount = pj.Likes ? pj.Likes.length : 0;
+            pj.authorPhoto = userMap[pj.author] || null;
+            delete pj.Comments;
+            delete pj.Likes;
+            return pj;
+        });
+        res.json(result);
     } catch (error) {
         res.status(500).json({ error: 'Failed to retrieve posts' });
     }

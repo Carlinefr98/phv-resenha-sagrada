@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import './CommentSection.css';
 
@@ -8,6 +9,12 @@ const CommentSection = ({ postId }) => {
     const [loading, setLoading] = useState(false);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    const getImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
+    };
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -62,8 +69,15 @@ const CommentSection = ({ postId }) => {
             <ul className="comment-list">
                 {comments.map((comment) => (
                     <li key={comment.id} className="comment-item">
-                        <span className="comment-author">{comment.author}</span>
-                        <span className="comment-content">{comment.content}</span>
+                        {comment.User && comment.User.profilePhoto ? (
+                            <img src={getImageUrl(comment.User.profilePhoto)} alt="" className="comment-avatar-img" />
+                        ) : (
+                            <span className="comment-avatar">{(comment.author || '?').charAt(0).toUpperCase()}</span>
+                        )}
+                        <div className="comment-body">
+                            <Link to={`/perfil/${comment.author}`} className="comment-author-link">{comment.author}</Link>
+                            <span className="comment-content">{comment.content}</span>
+                        </div>
                     </li>
                 ))}
             </ul>
