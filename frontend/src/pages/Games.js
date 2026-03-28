@@ -948,14 +948,14 @@ const LauraMariana = ({ adminMode }) => {
 };
 
 // ==================== FLAPPY BIRD (CARTEIRA DE TRABALHO) ====================
-const FB_WIDTH = 320;
-const FB_HEIGHT = 480;
-const FB_GRAVITY = 0.35;
-const FB_JUMP = -6;
-const FB_PIPE_WIDTH = 50;
-const FB_PIPE_GAP = 130;
-const FB_PIPE_SPEED = 2.5;
-const FB_BIRD_SIZE = 30;
+const FB_WIDTH = 400;
+const FB_HEIGHT = 600;
+const FB_GRAVITY = 0.4;
+const FB_JUMP = -7;
+const FB_PIPE_WIDTH = 60;
+const FB_PIPE_GAP = 150;
+const FB_PIPE_SPEED = 2.8;
+const FB_BIRD_SIZE = 36;
 
 const FlappyBird = ({ adminMode }) => {
     const canvasRef = useRef(null);

@@ -23,6 +23,12 @@ const PostCard = ({ post }) => {
     const hasVideo = !!post.videoUrl;
     const hasAudio = !!post.audioUrl;
 
+    const getAudioUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
+    };
+
     return (
         <div className="post-card">
             <Link to={`/post/${post.id}`} className="post-card-link">
@@ -74,6 +80,14 @@ const PostCard = ({ post }) => {
                     </div>
                 </div>
             </Link>
+            {hasAudio && (
+                <div className="post-card-audio" onClick={e => e.stopPropagation()}>
+                    <p className="post-card-audio-label">🎵 Áudio</p>
+                    <audio controls preload="none" style={{ width: '100%' }}>
+                        <source src={getAudioUrl(post.audioUrl)} />
+                    </audio>
+                </div>
+            )}
         </div>
     );
 };
