@@ -21,6 +21,7 @@ const PostCard = ({ post }) => {
 
     const ytId = getYoutubeId(post.videoUrl);
     const hasVideo = !!post.videoUrl;
+    const hasAudio = !!post.audioUrl;
 
     return (
         <div className="post-card">
@@ -63,6 +64,7 @@ const PostCard = ({ post }) => {
                     <div className="post-card-stats">
                         <span className="post-card-stat">💬 {post.commentCount || 0}</span>
                         <span className="post-card-stat">❤️ {post.likeCount || 0}</span>
+                        {hasAudio && <span className="post-card-stat">🎵</span>}
                         {post.likeUsers && post.likeUsers.length > 0 && (
                             <span className="post-card-liked-by">
                                 {post.likeUsers.slice(0, 3).map(u => u.username).join(', ')}

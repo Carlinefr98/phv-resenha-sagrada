@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Comment, User } = require('../models');
+const { Comment, User, Badge, UserBadge } = require('../models');
 const authMiddleware = require('../middleware/auth');
 
 // Get comments for a specific post (with user info)
@@ -26,6 +26,22 @@ router.post('/:postId', authMiddleware, async (req, res) => {
         const full = await Comment.findByPk(comment.id, {
             include: [{ model: User, attributes: ['id', 'username', 'profilePhoto'] }]
         });
+
+        // Check "Comentarista" badge (20+ comments)
+        try {
+            const commentCount = await Comment.count({ where: { userId: req.user.id } });
+            if (commentCount >= 20) {
+                const badge = await Badge.findOne({ where: { name: 'Comentarista' } });
+                if (badge) {
+                    const existing = await UserBadge.findOne({ where: { userId: req.user.id, badgeId: badge.id } });
+                    if (!existing) {
+                        await UserBadge.create({ userId: req.user.id, badgeId: badge.id });
+                        return res.status(201).json({ ...full.toJSON(), earnedBadge: badge });
+                    }
+                }
+            }
+        } catch (e) { console.error('Badge check error:', e); }
+
         res.status(201).json(full);
     } catch (error) {
         res.status(500).json({ error: 'Failed to add comment' });

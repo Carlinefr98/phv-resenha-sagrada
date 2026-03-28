@@ -39,7 +39,13 @@ const SnakeGame = () => {
 
     const saveScore = useCallback(async (finalScore) => {
         if (!user.username || finalScore === 0) return;
-        try { await api.post('/snake', { username: user.username, score: finalScore }); fetchRanking(); } catch (e) { console.error(e); }
+        try {
+            const res = await api.post('/snake', { username: user.username, score: finalScore });
+            fetchRanking();
+            if (res.data && res.data.earnedBadge) {
+                alert(`🏆 Badge conquistada: ${res.data.earnedBadge.emoji} ${res.data.earnedBadge.name}!\n${res.data.earnedBadge.description}`);
+            }
+        } catch (e) { console.error(e); }
     }, [user.username, fetchRanking]);
 
     const startGame = useCallback(() => {

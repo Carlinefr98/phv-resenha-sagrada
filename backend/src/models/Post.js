@@ -17,6 +17,10 @@ const Post = sequelize.define('Post', {
     videoUrl: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    audioUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 

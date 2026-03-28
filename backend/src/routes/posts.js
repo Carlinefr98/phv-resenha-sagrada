@@ -2,15 +2,15 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { cloudinary, storage: cloudStorage } = require('../cloudinary');
-const { Post, Image, Comment, Like, User } = require('../models');
+const { cloudinary, storage: cloudStorage, mixedStorage } = require('../cloudinary');
+const { Post, Image, Comment, Like, User, Badge, UserBadge } = require('../models');
 
 const router = express.Router();
 
 let upload;
 if (process.env.CLOUDINARY_CLOUD_NAME) {
-    // Production: use Cloudinary
-    upload = multer({ storage: cloudStorage });
+    // Production: use Cloudinary mixed storage (images + audio)
+    upload = multer({ storage: mixedStorage });
 } else {
     // Local: use disk storage
     const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
@@ -29,18 +29,45 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
 }
 
 // Create a new post
-router.post('/', upload.array('images', 5), async (req, res) => {
+router.post('/', upload.fields([{ name: 'images', maxCount: 5 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
     try {
         const { title, description, author, videoUrl } = req.body;
-        const post = await Post.create({ title, description, author, videoUrl: videoUrl || null });
+        const post = await Post.create({ title, description, author, videoUrl: videoUrl || null, audioUrl: null });
 
-        if (req.files && req.files.length > 0) {
-            const images = req.files.map(file => ({
+        // Handle image files
+        const imageFiles = req.files && req.files['images'] ? req.files['images'] : [];
+        if (imageFiles.length > 0) {
+            const images = imageFiles.map(file => ({
                 postId: post.id,
                 url: file.path && file.path.startsWith('http') ? file.path : (file.filename ? 'uploads/' + file.filename : file.path)
             }));
             await Image.bulkCreate(images);
         }
+
+        // Handle audio file
+        const audioFiles = req.files && req.files['audio'] ? req.files['audio'] : [];
+        if (audioFiles.length > 0) {
+            const audioFile = audioFiles[0];
+            post.audioUrl = audioFile.path && audioFile.path.startsWith('http') ? audioFile.path : (audioFile.filename ? 'uploads/' + audioFile.filename : audioFile.path);
+            await post.save();
+        }
+
+        // Check "Fotógrafo Oficial" badge (10+ posts with photos)
+        try {
+            const user = await User.findOne({ where: { username: author } });
+            if (user) {
+                const postCount = await Post.count({ where: { author } });
+                if (postCount >= 10) {
+                    const badge = await Badge.findOne({ where: { name: 'Fotógrafo Oficial' } });
+                    if (badge) {
+                        const existing = await UserBadge.findOne({ where: { userId: user.id, badgeId: badge.id } });
+                        if (!existing) {
+                            await UserBadge.create({ userId: user.id, badgeId: badge.id });
+                        }
+                    }
+                }
+            }
+        } catch (e) { console.error('Badge check error:', e); }
 
         const fullPost = await Post.findByPk(post.id, { include: Image });
         res.status(201).json(fullPost);

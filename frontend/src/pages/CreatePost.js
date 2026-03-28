@@ -7,6 +7,7 @@ const CreatePost = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState([]);
+    const [audio, setAudio] = useState(null);
     const [videoUrl, setVideoUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -31,6 +32,7 @@ const CreatePost = () => {
         images.forEach((image) => {
             formData.append('images', image);
         });
+        if (audio) formData.append('audio', audio);
 
         try {
             await api.post('/posts', formData, {
@@ -85,6 +87,20 @@ const CreatePost = () => {
                             />
                             <label htmlFor="image-upload" className="file-input-label">
                                 📷 {images.length > 0 ? `${images.length} foto(s) selecionada(s)` : 'Escolher fotos'}
+                            </label>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label>Áudio (opcional)</label>
+                        <div className="file-input-wrapper">
+                            <input
+                                type="file"
+                                accept="audio/*"
+                                onChange={(e) => setAudio(e.target.files[0] || null)}
+                                id="audio-upload"
+                            />
+                            <label htmlFor="audio-upload" className="file-input-label">
+                                🎵 {audio ? audio.name : 'Escolher áudio'}
                             </label>
                         </div>
                     </div>

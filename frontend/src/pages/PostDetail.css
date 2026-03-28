@@ -86,3 +86,20 @@
     padding: 0 24px 16px;
     border-bottom: 1px solid rgba(241, 164, 22, 0.15);
 }
+
+.post-detail-audio {
+    padding: 16px 24px;
+    background: rgba(241, 164, 22, 0.05);
+    border-radius: 10px;
+    margin: 0 24px 16px;
+}
+
+.post-detail-audio-label {
+    font-weight: 700;
+    color: #F1A416;
+    margin-bottom: 8px;
+}
+
+.post-detail-audio audio {
+    border-radius: 8px;
+}

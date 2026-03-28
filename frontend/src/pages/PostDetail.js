@@ -43,6 +43,12 @@ const PostDetail = () => {
         );
     }
 
+    const getImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
+    };
+
     const getYoutubeId = (url) => {
         if (!url) return null;
         const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
@@ -101,6 +107,15 @@ const PostDetail = () => {
                             <source src={post.videoUrl} />
                             Seu navegador não suporta vídeo.
                         </video>
+                    </div>
+                )}
+                {post.audioUrl && (
+                    <div className="post-detail-audio">
+                        <p className="post-detail-audio-label">🎵 Áudio</p>
+                        <audio controls style={{ width: '100%' }}>
+                            <source src={getImageUrl(post.audioUrl)} />
+                            Seu navegador não suporta áudio.
+                        </audio>
                     </div>
                 )}
                 <div className="post-detail-body">

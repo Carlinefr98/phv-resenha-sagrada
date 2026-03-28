@@ -38,7 +38,11 @@ const CommentSection = ({ postId }) => {
                 author: user.username || 'Anônimo',
                 content: newComment
             }, { headers: { Authorization: `Bearer ${user.token}` } });
-            setComments([...comments, response.data]);
+            const data = response.data;
+            if (data.earnedBadge) {
+                alert(`🏆 Badge conquistada: ${data.earnedBadge.emoji} ${data.earnedBadge.name}!\n${data.earnedBadge.description}`);
+            }
+            setComments([...comments, data]);
             setNewComment('');
         } catch (error) {
             console.error('Error submitting comment:', error);
