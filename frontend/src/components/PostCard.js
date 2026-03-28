@@ -56,6 +56,13 @@ const PostCard = ({ post }) => {
                 <div className="post-card-body">
                     <h3 className="post-card-title">{post.title}</h3>
                     <p className="post-card-description">{post.description}</p>
+                    {hasAudio && (
+                        <div className="post-card-audio" onClick={e => e.stopPropagation()}>
+                            <audio controls preload="none" style={{ width: '100%' }}>
+                                <source src={getAudioUrl(post.audioUrl)} />
+                            </audio>
+                        </div>
+                    )}
                     <div className="post-card-meta">
                         <Link to={`/perfil/${post.author}`} className="post-card-author" onClick={e => e.stopPropagation()}>
                             {post.authorPhoto ? (
@@ -80,14 +87,6 @@ const PostCard = ({ post }) => {
                     </div>
                 </div>
             </Link>
-            {hasAudio && (
-                <div className="post-card-audio" onClick={e => e.stopPropagation()}>
-                    <p className="post-card-audio-label">🎵 Áudio</p>
-                    <audio controls preload="none" style={{ width: '100%' }}>
-                        <source src={getAudioUrl(post.audioUrl)} />
-                    </audio>
-                </div>
-            )}
         </div>
     );
 };
