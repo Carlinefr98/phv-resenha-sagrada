@@ -52,7 +52,7 @@ const CreatePost = () => {
     return (
         <div className="create-post">
             <div className="create-post-card">
-                <h2>✝ Nova Resenha 🍷</h2>
+                <h2><span className="emoji">✝</span> Nova Resenha <span className="emoji">🍷</span></h2>
                 {error && <p className="create-post-error">{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">

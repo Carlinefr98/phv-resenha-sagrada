@@ -61,7 +61,7 @@ const Events = () => {
 
     return (
         <div className="events-page">
-            <h1 className="events-title">📅 Eventos PHV</h1>
+            <h1 className="events-title"><span className="emoji">📅</span> Eventos PHV</h1>
 
             {user.username && (
                 <div className="events-create-area">

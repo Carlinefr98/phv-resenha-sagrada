@@ -49,8 +49,20 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/games', gamesRoutes);
 
 // Sync database and start server
-sequelize.sync({ alter: true }).then(() => {
+const { Badge } = require('./models');
+
+sequelize.sync({ alter: true }).then(async () => {
     console.log('Database synced successfully.');
+
+    // Ensure game badges exist
+    const gameBadges = [
+        { name: 'Piloto de CTPS', description: 'Fez mais de 50 pontos no Flappy CTPS', emoji: '🐦' },
+        { name: 'Destruidor Espacial', description: 'Fez mais de 300 pontos no Space Invaders', emoji: '👾' },
+    ];
+    for (const b of gameBadges) {
+        await Badge.findOrCreate({ where: { name: b.name }, defaults: b });
+    }
+
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
     });

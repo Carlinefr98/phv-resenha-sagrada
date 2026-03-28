@@ -10,6 +10,9 @@ const Event = require('./Event');
 const EventParticipant = require('./EventParticipant');
 const SnakeScore = require('./SnakeScore');
 const MuseumEvent = require('./MuseumEvent');
+const GameAsset = require('./GameAsset');
+const FlappyScore = require('./FlappyScore');
+const InvaderScore = require('./InvaderScore');
 
 // Associations
 Post.hasMany(Image, { foreignKey: 'postId', onDelete: 'CASCADE' });
@@ -38,4 +41,4 @@ Badge.belongsToMany(User, { through: UserBadge, foreignKey: 'badgeId' });
 Event.hasMany(EventParticipant, { foreignKey: 'eventId', onDelete: 'CASCADE' });
 EventParticipant.belongsTo(Event, { foreignKey: 'eventId' });
 
-module.exports = { sequelize, User, Post, Image, Comment, Like, Badge, UserBadge, Event, EventParticipant, SnakeScore, MuseumEvent };
+module.exports = { sequelize, User, Post, Image, Comment, Like, Badge, UserBadge, Event, EventParticipant, SnakeScore, MuseumEvent, GameAsset, FlappyScore, InvaderScore };

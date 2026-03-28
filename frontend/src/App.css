@@ -40,6 +40,14 @@
   box-sizing: border-box;
 }
 
+/* Fix emoji color inside gradient text elements */
+.emoji {
+  -webkit-text-fill-color: initial;
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+
 body {
   font-family: 'League Spartan', sans-serif;
   background: var(--bg-primary);

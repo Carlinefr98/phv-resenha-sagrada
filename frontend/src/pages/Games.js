@@ -300,7 +300,24 @@ const SpaceInvaders = ({ adminMode }) => {
     const [bosses, setBosses] = useState([]);
     const [bossImages, setBossImages] = useState({});
     const [uploadingBoss, setUploadingBoss] = useState(null);
+    const [ranking, setRanking] = useState([]);
     const gameRef = useRef(null);
+
+    const fetchRanking = useCallback(async () => {
+        try { const res = await api.get('/games/invaders/ranking'); setRanking(res.data); } catch (e) { console.error(e); }
+    }, []);
+    useEffect(() => { fetchRanking(); }, [fetchRanking]);
+
+    const saveScore = useCallback(async (finalScore) => {
+        if (!user || !user.username || finalScore === 0) return;
+        try {
+            const res = await api.post('/games/invaders', { username: user.username, score: finalScore });
+            fetchRanking();
+            if (res.data && res.data.earnedBadge) {
+                alert(`🏆 Badge conquistada: ${res.data.earnedBadge.emoji} ${res.data.earnedBadge.name}!\n${res.data.earnedBadge.description}`);
+            }
+        } catch (e) { console.error(e); }
+    }, [user, fetchRanking]);
 
     const getImageUrl = (url) => {
         if (!url) return null;
@@ -439,7 +456,7 @@ const SpaceInvaders = ({ adminMode }) => {
                         state.level++;
                         setLevel(state.level);
                         if (state.level > 3) {
-                            clearInterval(loop); setGameRunning(false); setGameOver(true); return false;
+                            clearInterval(loop); setGameRunning(false); setGameOver(true); saveScore(state.score); return false;
                         }
                         // Spawn next wave
                         for (let row = 0; row < 3; row++) {
@@ -457,7 +474,7 @@ const SpaceInvaders = ({ adminMode }) => {
             for (const b of state.enemyBullets) {
                 if (b.x < state.player.x + state.player.w && b.x + b.w > state.player.x &&
                     b.y < state.player.y + state.player.h && b.y + b.h > state.player.y) {
-                    clearInterval(loop); setGameRunning(false); setGameOver(true);
+                    clearInterval(loop); setGameRunning(false); setGameOver(true); saveScore(state.score);
                     window.removeEventListener('keydown', keyDown);
                     window.removeEventListener('keyup', keyUp);
                     return;
@@ -467,7 +484,7 @@ const SpaceInvaders = ({ adminMode }) => {
             // Enemy reaches player
             for (const e of state.enemies) {
                 if (e.y + e.h >= state.player.y) {
-                    clearInterval(loop); setGameRunning(false); setGameOver(true);
+                    clearInterval(loop); setGameRunning(false); setGameOver(true); saveScore(state.score);
                     window.removeEventListener('keydown', keyDown);
                     window.removeEventListener('keyup', keyUp);
                     return;
@@ -545,7 +562,7 @@ const SpaceInvaders = ({ adminMode }) => {
         }, 1000 / 60);
 
         return () => { clearInterval(loop); window.removeEventListener('keydown', keyDown); window.removeEventListener('keyup', keyUp); };
-    }, [gameRunning, bosses, bossImages]);
+    }, [gameRunning, bosses, bossImages, saveScore]);
 
     // Mobile controls
     const moveLeft = () => { if (gameRef.current) gameRef.current.keys['ArrowLeft'] = true; setTimeout(() => { if (gameRef.current) gameRef.current.keys['ArrowLeft'] = false; }, 100); };
@@ -593,6 +610,15 @@ const SpaceInvaders = ({ adminMode }) => {
                 <button onTouchStart={moveLeft} onClick={moveLeft}>◄</button>
                 <button onTouchStart={shoot} onClick={shoot}>🔥</button>
                 <button onTouchStart={moveRight} onClick={moveRight}>►</button>
+            </div>
+            <div className="snake-ranking">
+                <h3>🏆 Ranking</h3>
+                {ranking.length === 0 ? <p className="ranking-empty">Nenhuma pontuação ainda.</p> : (
+                    <table><thead><tr><th>#</th><th>Jogador</th><th>Pontos</th></tr></thead>
+                        <tbody>{ranking.map((r, i) => (
+                            <tr key={r.id} className={i < 3 ? `top-${i + 1}` : ''}><td>{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</td><td>{r.username}</td><td>{r.score}</td></tr>
+                        ))}</tbody></table>
+                )}
             </div>
         </div>
     );
@@ -940,9 +966,26 @@ const FlappyBird = ({ adminMode }) => {
     const [bestScore, setBestScore] = useState(() => parseInt(localStorage.getItem('flappy-best') || '0'));
     const [assets, setAssets] = useState({ flappyBirdImg: null, flappyPipeImg: null });
     const [uploadingAsset, setUploadingAsset] = useState(false);
+    const [ranking, setRanking] = useState([]);
     const gameRef = useRef(null);
     const birdImgRef = useRef(null);
     const pipeImgRef = useRef(null);
+
+    const fetchRanking = useCallback(async () => {
+        try { const res = await api.get('/games/flappy/ranking'); setRanking(res.data); } catch (e) { console.error(e); }
+    }, []);
+    useEffect(() => { fetchRanking(); }, [fetchRanking]);
+
+    const saveScore = useCallback(async (finalScore) => {
+        if (!user || !user.username || finalScore === 0) return;
+        try {
+            const res = await api.post('/games/flappy', { username: user.username, score: finalScore });
+            fetchRanking();
+            if (res.data && res.data.earnedBadge) {
+                alert(`🏆 Badge conquistada: ${res.data.earnedBadge.emoji} ${res.data.earnedBadge.name}!\n${res.data.earnedBadge.description}`);
+            }
+        } catch (e) { console.error(e); }
+    }, [user, fetchRanking]);
 
     const getAssetUrl = (url) => {
         if (!url) return null;
@@ -1055,6 +1098,7 @@ const FlappyBird = ({ adminMode }) => {
                 clearInterval(loop);
                 setGameRunning(false);
                 setGameOver(true);
+                saveScore(state.score);
                 if (state.score > bestScore) {
                     setBestScore(state.score);
                     localStorage.setItem('flappy-best', state.score.toString());
@@ -1072,6 +1116,7 @@ const FlappyBird = ({ adminMode }) => {
                         clearInterval(loop);
                         setGameRunning(false);
                         setGameOver(true);
+                        saveScore(state.score);
                         if (state.score > bestScore) {
                             setBestScore(state.score);
                             localStorage.setItem('flappy-best', state.score.toString());
@@ -1237,7 +1282,7 @@ const FlappyBird = ({ adminMode }) => {
             clearInterval(loop);
             window.removeEventListener('keydown', handleKey);
         };
-    }, [gameRunning, bestScore]);
+    }, [gameRunning, bestScore, saveScore]);
 
     return (
         <div className="game-section">
@@ -1294,6 +1339,21 @@ const FlappyBird = ({ adminMode }) => {
                     </div>
                 )}
             </div>
+
+            {ranking.length > 0 && (
+                <div className="snake-ranking">
+                    <h3 className="ranking-title">🏆 Ranking Flappy CTPS</h3>
+                    <ol className="ranking-list">
+                        {ranking.map((r, i) => (
+                            <li key={r.id} className="ranking-item">
+                                <span className="ranking-pos">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`}</span>
+                                <span className="ranking-name">{r.username}</span>
+                                <span className="ranking-score">{r.score} pts</span>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            )}
         </div>
     );
 };
@@ -1314,7 +1374,7 @@ const Games = () => {
 
     return (
         <div className="games-page">
-            <h1 className="games-title">🎮 Jogos PHV</h1>
+            <h1 className="games-title"><span className="emoji">🎮</span> Jogos PHV</h1>
 
             {user && user.isAdmin && (
                 <div className="games-admin-bar">

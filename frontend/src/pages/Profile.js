@@ -172,7 +172,7 @@ const Profile = () => {
                         )}
                     </div>
 
-                    <h2 className="badges-title">🏆 Badges</h2>
+                    <h2 className="badges-title"><span className="emoji">🏆</span> Badges</h2>
                     <div className="badges-grid">
                         {allBadges.map(badge => (
                             <div key={badge.id} className={`badge-card ${hasBadge(badge.id) ? 'earned' : 'locked'}`}>

@@ -80,7 +80,7 @@ const UserProfile = () => {
 
             {userBadges.length > 0 && (
                 <>
-                    <h2 className="badges-title">🏆 Badges</h2>
+                    <h2 className="badges-title"><span className="emoji">🏆</span> Badges</h2>
                     <div className="badges-grid">
                         {userBadges.map(badge => (
                             <div key={badge.id} className="badge-card earned">

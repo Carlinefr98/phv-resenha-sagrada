@@ -27,7 +27,7 @@ const Memories = () => {
 
     return (
         <div className="memories-section">
-            <h2 className="memories-title">💭 Lembranças</h2>
+            <h2 className="memories-title"><span className="emoji">💭</span> Lembranças</h2>
             <div className="memories-list">
                 {memories.map(memory => (
                     <Link to={`/post/${memory.id}`} key={memory.id} className="memory-card">

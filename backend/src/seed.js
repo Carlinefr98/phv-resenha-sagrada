@@ -67,6 +67,8 @@ const seedDatabase = async () => {
         { name: 'Fotógrafo Oficial', description: 'Postou mais de 10 fotos', emoji: '📸' },
         { name: 'Comentarista', description: 'Fez mais de 20 comentários', emoji: '💬' },
         { name: 'Firme na Farra', description: 'Presente em todos os pós-missa do mês', emoji: '🍻' },
+        { name: 'Piloto de CTPS', description: 'Fez mais de 50 pontos no Flappy CTPS', emoji: '🐦' },
+        { name: 'Destruidor Espacial', description: 'Fez mais de 300 pontos no Space Invaders', emoji: '👾' },
     ];
 
     await Badge.bulkCreate(badges);

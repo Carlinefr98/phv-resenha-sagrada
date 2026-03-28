@@ -80,7 +80,7 @@ const Museum = () => {
 
     return (
         <div className="museum-page">
-            <h1 className="museum-title">🏛️ Museu PHV</h1>
+            <h1 className="museum-title"><span className="emoji">🏛️</span> Museu PHV</h1>
             <p className="museum-subtitle">A história do grupo, momentos que marcaram nossa caminhada.</p>
 
             {user && user.isAdmin && (
