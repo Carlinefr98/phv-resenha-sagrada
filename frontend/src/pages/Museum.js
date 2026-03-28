@@ -8,7 +8,7 @@ const Museum = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({ title: '', description: '', date: '' });
+    const [form, setForm] = useState({ title: '', description: '', date: '', videoUrl: '' });
     const [image, setImage] = useState(null);
     const [audio, setAudio] = useState(null);
     const [submitting, setSubmitting] = useState(false);
@@ -30,6 +30,18 @@ const Museum = () => {
         return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
     };
 
+    const getYoutubeId = (url) => {
+        if (!url) return null;
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+        return match ? match[1] : null;
+    };
+
+    const getDriveId = (url) => {
+        if (!url) return null;
+        const match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+        return match ? match[1] : null;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -38,12 +50,13 @@ const Museum = () => {
             formData.append('title', form.title);
             formData.append('description', form.description);
             formData.append('date', form.date);
+            if (form.videoUrl.trim()) formData.append('videoUrl', form.videoUrl.trim());
             if (image) formData.append('image', image);
             if (audio) formData.append('audio', audio);
             await api.post('/museum', formData, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
             });
-            setForm({ title: '', description: '', date: '' });
+            setForm({ title: '', description: '', date: '', videoUrl: '' });
             setImage(null);
             setAudio(null);
             setShowForm(false);
@@ -96,6 +109,9 @@ const Museum = () => {
                                 <input type="file" accept="audio/*" id="museum-audio" onChange={e => setAudio(e.target.files[0])} />
                                 <label htmlFor="museum-audio">🎵 {audio ? audio.name : 'Escolher áudio (opcional)'}</label>
                             </div>
+                            <input type="url" placeholder="Link de vídeo (YouTube ou Google Drive, opcional)"
+                                value={form.videoUrl} onChange={e => setForm({...form, videoUrl: e.target.value})} />
+                            <small style={{color: 'rgba(255,255,255,0.4)', display: 'block', marginTop: '-8px', marginBottom: '12px'}}>💡 YouTube ou Google Drive</small>
                             <button type="submit" disabled={submitting}>
                                 {submitting ? 'Salvando...' : '🚀 Salvar Momento'}
                             </button>
@@ -135,6 +151,30 @@ const Museum = () => {
                                     <audio controls className="timeline-audio">
                                         <source src={getImageUrl(event.audioUrl)} />
                                     </audio>
+                                )}
+                                {event.videoUrl && getYoutubeId(event.videoUrl) && (
+                                    <div className="timeline-video">
+                                        <iframe
+                                            width="100%" height="200"
+                                            src={`https://www.youtube.com/embed/${getYoutubeId(event.videoUrl)}`}
+                                            title={event.title}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                )}
+                                {event.videoUrl && getDriveId(event.videoUrl) && !getYoutubeId(event.videoUrl) && (
+                                    <div className="timeline-video">
+                                        <iframe
+                                            width="100%" height="200"
+                                            src={`https://drive.google.com/file/d/${getDriveId(event.videoUrl)}/preview`}
+                                            title={event.title}
+                                            frameBorder="0"
+                                            allow="autoplay; encrypted-media"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
                                 )}
                             </div>
                         </div>

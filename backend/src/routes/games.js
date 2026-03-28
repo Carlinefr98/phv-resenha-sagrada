@@ -38,6 +38,7 @@ let gameAssets = {
     marianaImg: null,
     musicUrl: null,
     flappyBirdImg: null,
+    flappyPipeImg: null,
 };
 
 // Get bosses
@@ -67,7 +68,7 @@ router.put('/bosses/:id', adminMiddleware, upload.single('image'), (req, res) =>
 // Upload game asset (admin only) - laura, mariana, or music
 router.put('/assets/:type', adminMiddleware, (req, res, next) => {
     const { type } = req.params;
-    if (!['laura', 'mariana', 'music', 'flappybird'].includes(type)) {
+    if (!['laura', 'mariana', 'music', 'flappybird', 'flappypipe'].includes(type)) {
         return res.status(400).json({ error: 'Invalid asset type' });
     }
     const uploader = type === 'music' ? audioUpload : upload;
@@ -83,6 +84,7 @@ router.put('/assets/:type', adminMiddleware, (req, res, next) => {
         else if (type === 'mariana') gameAssets.marianaImg = url;
         else if (type === 'music') gameAssets.musicUrl = url;
         else if (type === 'flappybird') gameAssets.flappyBirdImg = url;
+        else if (type === 'flappypipe') gameAssets.flappyPipeImg = url;
 
         res.json(gameAssets);
     });

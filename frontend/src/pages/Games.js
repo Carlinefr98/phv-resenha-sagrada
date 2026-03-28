@@ -938,10 +938,11 @@ const FlappyBird = ({ adminMode }) => {
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
     const [bestScore, setBestScore] = useState(() => parseInt(localStorage.getItem('flappy-best') || '0'));
-    const [assets, setAssets] = useState({ flappyBirdImg: null });
+    const [assets, setAssets] = useState({ flappyBirdImg: null, flappyPipeImg: null });
     const [uploadingAsset, setUploadingAsset] = useState(false);
     const gameRef = useRef(null);
     const birdImgRef = useRef(null);
+    const pipeImgRef = useRef(null);
 
     const getAssetUrl = (url) => {
         if (!url) return null;
@@ -958,15 +959,21 @@ const FlappyBird = ({ adminMode }) => {
                 img.src = getAssetUrl(res.data.flappyBirdImg);
                 birdImgRef.current = img;
             }
+            if (res.data.flappyPipeImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.flappyPipeImg);
+                pipeImgRef.current = img;
+            }
         }).catch(e => console.error(e));
     }, []);
 
-    const handleAssetUpload = async (file) => {
+    const handleAssetUpload = async (file, type) => {
         const formData = new FormData();
         formData.append('file', file);
         setUploadingAsset(true);
         try {
-            const res = await api.put('/games/assets/flappybird', formData, {
+            const res = await api.put(`/games/assets/${type}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
             });
             setAssets(res.data);
@@ -975,6 +982,12 @@ const FlappyBird = ({ adminMode }) => {
                 img.crossOrigin = 'anonymous';
                 img.src = getAssetUrl(res.data.flappyBirdImg);
                 birdImgRef.current = img;
+            }
+            if (res.data.flappyPipeImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.flappyPipeImg);
+                pipeImgRef.current = img;
             }
         } catch (e) { console.error(e); }
         setUploadingAsset(false);
@@ -1088,6 +1101,8 @@ const FlappyBird = ({ adminMode }) => {
             }
 
             // Pipes (carteira de trabalho style)
+            const pipeImg = pipeImgRef.current;
+            const usePipeImg = pipeImg && pipeImg.complete && pipeImg.naturalWidth > 0;
             state.pipes.forEach(p => {
                 // Top pipe
                 const topH = p.gapY;
@@ -1095,54 +1110,85 @@ const FlappyBird = ({ adminMode }) => {
                 const bottomY = p.gapY + FB_PIPE_GAP;
                 const bottomH = FB_HEIGHT - bottomY;
 
-                // Carteira de trabalho - dark blue cover
-                ctx.fillStyle = '#1a3a5c';
-                ctx.fillRect(p.x, 0, FB_PIPE_WIDTH, topH);
-                ctx.fillRect(p.x, bottomY, FB_PIPE_WIDTH, bottomH);
+                if (usePipeImg) {
+                    // Use uploaded PNG for pipes
+                    const imgW = FB_PIPE_WIDTH;
+                    const imgH = (pipeImg.naturalHeight / pipeImg.naturalWidth) * imgW;
 
-                // Gold trim
-                ctx.strokeStyle = '#F1A416';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(p.x + 3, 3, FB_PIPE_WIDTH - 6, topH - 6);
-                ctx.strokeRect(p.x + 3, bottomY + 3, FB_PIPE_WIDTH - 6, bottomH - 6);
-
-                // "CTPS" text
-                ctx.fillStyle = '#F1A416';
-                ctx.font = 'bold 9px "League Spartan", sans-serif';
-                ctx.textAlign = 'center';
-                if (topH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, topH - 10);
-                if (bottomH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, bottomY + 20);
-
-                // Coat of arms circle
-                ctx.fillStyle = '#F1A416';
-                ctx.beginPath();
-                if (topH > 50) {
-                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 10, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#1a3a5c';
+                    // Top pipe - tile the image upward, flip vertically
+                    ctx.save();
                     ctx.beginPath();
-                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 6, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.fillStyle = '#F1A416';
-                ctx.beginPath();
-                if (bottomH > 50) {
-                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 10, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#1a3a5c';
-                    ctx.beginPath();
-                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 6, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                    ctx.rect(p.x, 0, FB_PIPE_WIDTH, topH);
+                    ctx.clip();
+                    ctx.translate(p.x + FB_PIPE_WIDTH / 2, topH);
+                    ctx.scale(1, -1);
+                    for (let y = 0; y < topH + imgH; y += imgH) {
+                        ctx.drawImage(pipeImg, -imgW / 2, y, imgW, imgH);
+                    }
+                    ctx.restore();
 
-                // Pipe caps
-                ctx.fillStyle = '#0f2940';
-                ctx.fillRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
-                ctx.fillRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
-                ctx.strokeStyle = '#F1A416';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
-                ctx.strokeRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                    // Bottom pipe - tile the image downward
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(p.x, bottomY, FB_PIPE_WIDTH, bottomH);
+                    ctx.clip();
+                    for (let y = bottomY; y < FB_HEIGHT + imgH; y += imgH) {
+                        ctx.drawImage(pipeImg, p.x, y, imgW, imgH);
+                    }
+                    ctx.restore();
+
+                    // Pipe caps
+                    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                    ctx.fillRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                    ctx.fillRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                    ctx.drawImage(pipeImg, p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                    ctx.drawImage(pipeImg, p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                } else {
+                    // Fallback: drawn CTPS style
+                    ctx.fillStyle = '#1a3a5c';
+                    ctx.fillRect(p.x, 0, FB_PIPE_WIDTH, topH);
+                    ctx.fillRect(p.x, bottomY, FB_PIPE_WIDTH, bottomH);
+
+                    ctx.strokeStyle = '#F1A416';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(p.x + 3, 3, FB_PIPE_WIDTH - 6, topH - 6);
+                    ctx.strokeRect(p.x + 3, bottomY + 3, FB_PIPE_WIDTH - 6, bottomH - 6);
+
+                    ctx.fillStyle = '#F1A416';
+                    ctx.font = 'bold 9px "League Spartan", sans-serif';
+                    ctx.textAlign = 'center';
+                    if (topH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, topH - 10);
+                    if (bottomH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, bottomY + 20);
+
+                    ctx.fillStyle = '#F1A416';
+                    ctx.beginPath();
+                    if (topH > 50) {
+                        ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#1a3a5c';
+                        ctx.beginPath();
+                        ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.fillStyle = '#F1A416';
+                    ctx.beginPath();
+                    if (bottomH > 50) {
+                        ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#1a3a5c';
+                        ctx.beginPath();
+                        ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.fillStyle = '#0f2940';
+                    ctx.fillRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                    ctx.fillRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                    ctx.strokeStyle = '#F1A416';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                    ctx.strokeRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                }
             });
 
             // Bird
@@ -1200,7 +1246,7 @@ const FlappyBird = ({ adminMode }) => {
 
             {user && user.isAdmin && adminMode && (
                 <div className="boss-config">
-                    <h4>⚙️ Configurar Passarinho (Admin)</h4>
+                    <h4>⚙️ Configurar Flappy CTPS (Admin)</h4>
                     <div className="boss-config-grid">
                         <div className="boss-config-item">
                             <span>Passarinho (PNG)</span>
@@ -1209,7 +1255,16 @@ const FlappyBird = ({ adminMode }) => {
                             ) : assets.flappyBirdImg ? (
                                 <img src={getAssetUrl(assets.flappyBirdImg)} alt="Bird" className="boss-preview" />
                             ) : <div className="boss-preview-empty">🐦</div>}
-                            <input type="file" accept="image/*" disabled={uploadingAsset} onChange={e => e.target.files[0] && handleAssetUpload(e.target.files[0])} />
+                            <input type="file" accept="image/*" disabled={uploadingAsset} onChange={e => e.target.files[0] && handleAssetUpload(e.target.files[0], 'flappybird')} />
+                        </div>
+                        <div className="boss-config-item">
+                            <span>Cano (PNG)</span>
+                            {uploadingAsset ? (
+                                <div className="boss-uploading">⏳ Enviando...</div>
+                            ) : assets.flappyPipeImg ? (
+                                <img src={getAssetUrl(assets.flappyPipeImg)} alt="Pipe" className="boss-preview" />
+                            ) : <div className="boss-preview-empty">🧱</div>}
+                            <input type="file" accept="image/*" disabled={uploadingAsset} onChange={e => e.target.files[0] && handleAssetUpload(e.target.files[0], 'flappypipe')} />
                         </div>
                     </div>
                 </div>

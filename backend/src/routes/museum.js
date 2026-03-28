@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
 // Create museum event (admin only, with image + audio upload)
 router.post('/', adminMiddleware, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
     try {
-        const { title, description, date } = req.body;
+        const { title, description, date, videoUrl } = req.body;
         let imageUrl = req.body.imageUrl || null;
         let audioUrl = req.body.audioUrl || null;
         if (req.files && req.files.image && req.files.image[0]) {
@@ -48,7 +48,7 @@ router.post('/', adminMiddleware, upload.fields([{ name: 'image', maxCount: 1 },
             const f = req.files.audio[0];
             audioUrl = f.path && f.path.startsWith('http') ? f.path : (f.filename ? 'uploads/' + f.filename : f.path);
         }
-        const event = await MuseumEvent.create({ title, description, date, imageUrl, audioUrl });
+        const event = await MuseumEvent.create({ title, description, date, imageUrl, audioUrl, videoUrl: videoUrl || null });
         res.status(201).json(event);
     } catch (error) {
         res.status(500).json({ error: 'Failed to create museum event' });

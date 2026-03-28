@@ -21,6 +21,10 @@ const MuseumEvent = sequelize.define('MuseumEvent', {
     audioUrl: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    videoUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 });
 
