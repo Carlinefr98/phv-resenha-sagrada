@@ -1340,20 +1340,15 @@ const FlappyBird = ({ adminMode }) => {
                 )}
             </div>
 
-            {ranking.length > 0 && (
-                <div className="snake-ranking">
-                    <h3 className="ranking-title">🏆 Ranking Flappy CTPS</h3>
-                    <ol className="ranking-list">
-                        {ranking.map((r, i) => (
-                            <li key={r.id} className="ranking-item">
-                                <span className="ranking-pos">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`}</span>
-                                <span className="ranking-name">{r.username}</span>
-                                <span className="ranking-score">{r.score} pts</span>
-                            </li>
-                        ))}
-                    </ol>
-                </div>
-            )}
+            <div className="snake-ranking">
+                <h3>🏆 Ranking</h3>
+                {ranking.length === 0 ? <p className="ranking-empty">Nenhuma pontuação ainda.</p> : (
+                    <table><thead><tr><th>#</th><th>Jogador</th><th>Pontos</th></tr></thead>
+                        <tbody>{ranking.map((r, i) => (
+                            <tr key={r.id} className={i < 3 ? `top-${i + 1}` : ''}><td>{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</td><td>{r.username}</td><td>{r.score}</td></tr>
+                        ))}</tbody></table>
+                )}
+            </div>
         </div>
     );
 };
