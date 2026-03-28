@@ -915,6 +915,328 @@ const LauraMariana = ({ adminMode }) => {
     );
 };
 
+// ==================== FLAPPY BIRD (CARTEIRA DE TRABALHO) ====================
+const FB_WIDTH = 320;
+const FB_HEIGHT = 480;
+const FB_GRAVITY = 0.35;
+const FB_JUMP = -6;
+const FB_PIPE_WIDTH = 50;
+const FB_PIPE_GAP = 130;
+const FB_PIPE_SPEED = 2.5;
+const FB_BIRD_SIZE = 30;
+
+const FlappyBird = ({ adminMode }) => {
+    const canvasRef = useRef(null);
+    const { user } = useContext(AuthContext);
+    const [gameRunning, setGameRunning] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [score, setScore] = useState(0);
+    const [bestScore, setBestScore] = useState(() => parseInt(localStorage.getItem('flappy-best') || '0'));
+    const [assets, setAssets] = useState({ flappyBirdImg: null });
+    const [uploadingAsset, setUploadingAsset] = useState(false);
+    const gameRef = useRef(null);
+    const birdImgRef = useRef(null);
+
+    const getAssetUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return `${api.defaults.baseURL.replace('/api', '')}/${url}`;
+    };
+
+    useEffect(() => {
+        api.get('/games/assets').then(res => {
+            setAssets(res.data);
+            if (res.data.flappyBirdImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.flappyBirdImg);
+                birdImgRef.current = img;
+            }
+        }).catch(e => console.error(e));
+    }, []);
+
+    const handleAssetUpload = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        setUploadingAsset(true);
+        try {
+            const res = await api.put('/games/assets/flappybird', formData, {
+                headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${user.token}` }
+            });
+            setAssets(res.data);
+            if (res.data.flappyBirdImg) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = getAssetUrl(res.data.flappyBirdImg);
+                birdImgRef.current = img;
+            }
+        } catch (e) { console.error(e); }
+        setUploadingAsset(false);
+    };
+
+    const startGame = () => {
+        setScore(0);
+        setGameOver(false);
+        setGameRunning(true);
+        gameRef.current = {
+            bird: { x: 60, y: FB_HEIGHT / 2, vy: 0 },
+            pipes: [],
+            score: 0,
+            frame: 0,
+        };
+    };
+
+    const jump = useCallback(() => {
+        if (!gameRunning) return;
+        if (gameRef.current) gameRef.current.bird.vy = FB_JUMP;
+    }, [gameRunning]);
+
+    useEffect(() => {
+        if (!gameRunning) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const state = gameRef.current;
+
+        const handleKey = (e) => {
+            if (e.code === 'Space' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                state.bird.vy = FB_JUMP;
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+
+        const loop = setInterval(() => {
+            state.frame++;
+
+            // Bird physics
+            state.bird.vy += FB_GRAVITY;
+            state.bird.y += state.bird.vy;
+
+            // Spawn pipes
+            if (state.frame % 90 === 0) {
+                const gapY = 80 + Math.random() * (FB_HEIGHT - FB_PIPE_GAP - 160);
+                state.pipes.push({ x: FB_WIDTH, gapY, scored: false });
+            }
+
+            // Move pipes
+            state.pipes.forEach(p => { p.x -= FB_PIPE_SPEED; });
+            state.pipes = state.pipes.filter(p => p.x > -FB_PIPE_WIDTH);
+
+            // Score
+            state.pipes.forEach(p => {
+                if (!p.scored && p.x + FB_PIPE_WIDTH < state.bird.x) {
+                    p.scored = true;
+                    state.score++;
+                    setScore(state.score);
+                }
+            });
+
+            // Collision with ground/ceiling
+            if (state.bird.y < 0 || state.bird.y + FB_BIRD_SIZE > FB_HEIGHT) {
+                clearInterval(loop);
+                setGameRunning(false);
+                setGameOver(true);
+                if (state.score > bestScore) {
+                    setBestScore(state.score);
+                    localStorage.setItem('flappy-best', state.score.toString());
+                }
+                window.removeEventListener('keydown', handleKey);
+                return;
+            }
+
+            // Collision with pipes
+            for (const p of state.pipes) {
+                const birdRight = state.bird.x + FB_BIRD_SIZE;
+                const birdBottom = state.bird.y + FB_BIRD_SIZE;
+                if (birdRight > p.x && state.bird.x < p.x + FB_PIPE_WIDTH) {
+                    if (state.bird.y < p.gapY || birdBottom > p.gapY + FB_PIPE_GAP) {
+                        clearInterval(loop);
+                        setGameRunning(false);
+                        setGameOver(true);
+                        if (state.score > bestScore) {
+                            setBestScore(state.score);
+                            localStorage.setItem('flappy-best', state.score.toString());
+                        }
+                        window.removeEventListener('keydown', handleKey);
+                        return;
+                    }
+                }
+            }
+
+            // Draw
+            // Sky gradient
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, FB_HEIGHT);
+            skyGrad.addColorStop(0, '#1a1a2e');
+            skyGrad.addColorStop(1, '#16213e');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, FB_WIDTH, FB_HEIGHT);
+
+            // Clouds
+            ctx.fillStyle = 'rgba(255,255,255,0.03)';
+            for (let i = 0; i < 5; i++) {
+                const cx = ((i * 97 + state.frame * 0.3) % (FB_WIDTH + 60)) - 30;
+                const cy = 40 + i * 80;
+                ctx.beginPath();
+                ctx.arc(cx, cy, 20 + i * 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Pipes (carteira de trabalho style)
+            state.pipes.forEach(p => {
+                // Top pipe
+                const topH = p.gapY;
+                // Bottom pipe
+                const bottomY = p.gapY + FB_PIPE_GAP;
+                const bottomH = FB_HEIGHT - bottomY;
+
+                // Carteira de trabalho - dark blue cover
+                ctx.fillStyle = '#1a3a5c';
+                ctx.fillRect(p.x, 0, FB_PIPE_WIDTH, topH);
+                ctx.fillRect(p.x, bottomY, FB_PIPE_WIDTH, bottomH);
+
+                // Gold trim
+                ctx.strokeStyle = '#F1A416';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(p.x + 3, 3, FB_PIPE_WIDTH - 6, topH - 6);
+                ctx.strokeRect(p.x + 3, bottomY + 3, FB_PIPE_WIDTH - 6, bottomH - 6);
+
+                // "CTPS" text
+                ctx.fillStyle = '#F1A416';
+                ctx.font = 'bold 9px "League Spartan", sans-serif';
+                ctx.textAlign = 'center';
+                if (topH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, topH - 10);
+                if (bottomH > 30) ctx.fillText('CTPS', p.x + FB_PIPE_WIDTH / 2, bottomY + 20);
+
+                // Coat of arms circle
+                ctx.fillStyle = '#F1A416';
+                ctx.beginPath();
+                if (topH > 50) {
+                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#1a3a5c';
+                    ctx.beginPath();
+                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, topH / 2, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#F1A416';
+                ctx.beginPath();
+                if (bottomH > 50) {
+                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#1a3a5c';
+                    ctx.beginPath();
+                    ctx.arc(p.x + FB_PIPE_WIDTH / 2, bottomY + bottomH / 2, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Pipe caps
+                ctx.fillStyle = '#0f2940';
+                ctx.fillRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                ctx.fillRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+                ctx.strokeStyle = '#F1A416';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(p.x - 4, topH - 16, FB_PIPE_WIDTH + 8, 16);
+                ctx.strokeRect(p.x - 4, bottomY, FB_PIPE_WIDTH + 8, 16);
+            });
+
+            // Bird
+            const birdImg = birdImgRef.current;
+            ctx.save();
+            ctx.translate(state.bird.x + FB_BIRD_SIZE / 2, state.bird.y + FB_BIRD_SIZE / 2);
+            const angle = Math.min(Math.max(state.bird.vy * 3, -30), 90) * Math.PI / 180;
+            ctx.rotate(angle);
+            if (birdImg && birdImg.complete && birdImg.naturalWidth > 0) {
+                ctx.drawImage(birdImg, -FB_BIRD_SIZE / 2, -FB_BIRD_SIZE / 2, FB_BIRD_SIZE, FB_BIRD_SIZE);
+            } else {
+                ctx.fillStyle = '#F1A416';
+                ctx.beginPath();
+                ctx.arc(0, 0, FB_BIRD_SIZE / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(6, -4, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#1a1a2e';
+                ctx.beginPath();
+                ctx.arc(7, -4, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#E73B43';
+                ctx.beginPath();
+                ctx.moveTo(FB_BIRD_SIZE / 2, -2);
+                ctx.lineTo(FB_BIRD_SIZE / 2 + 8, 0);
+                ctx.lineTo(FB_BIRD_SIZE / 2, 4);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // HUD
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 28px "League Spartan", sans-serif';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.fillText(state.score, FB_WIDTH / 2, 45);
+            ctx.shadowBlur = 0;
+
+        }, 1000 / 60);
+
+        return () => {
+            clearInterval(loop);
+            window.removeEventListener('keydown', handleKey);
+        };
+    }, [gameRunning, bestScore]);
+
+    return (
+        <div className="game-section">
+            <h2 className="game-section-title">🐦 Flappy CTPS</h2>
+            <p className="game-desc">Desvie das carteiras de trabalho! Toque ou pressione ESPAÇO para voar.</p>
+
+            {user && user.isAdmin && adminMode && (
+                <div className="boss-config">
+                    <h4>⚙️ Configurar Passarinho (Admin)</h4>
+                    <div className="boss-config-grid">
+                        <div className="boss-config-item">
+                            <span>Passarinho (PNG)</span>
+                            {uploadingAsset ? (
+                                <div className="boss-uploading">⏳ Enviando...</div>
+                            ) : assets.flappyBirdImg ? (
+                                <img src={getAssetUrl(assets.flappyBirdImg)} alt="Bird" className="boss-preview" />
+                            ) : <div className="boss-preview-empty">🐦</div>}
+                            <input type="file" accept="image/*" disabled={uploadingAsset} onChange={e => e.target.files[0] && handleAssetUpload(e.target.files[0])} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="fb-scores">
+                <span className="snake-score">Pontos: <strong>{score}</strong></span>
+                <span className="snake-high">Recorde: <strong>{bestScore}</strong></span>
+            </div>
+
+            <div className="fb-canvas-wrapper" onClick={jump} onTouchStart={jump}>
+                <canvas ref={canvasRef} width={FB_WIDTH} height={FB_HEIGHT} className="fb-canvas" />
+                {!gameRunning && (
+                    <div className="fb-overlay">
+                        {gameOver ? (
+                            <>
+                                <p className="snake-game-over">Game Over!</p>
+                                <p className="snake-final-score">Pontuação: {score}</p>
+                                {score >= bestScore && score > 0 && <p className="fb-new-record">🏆 Novo Recorde!</p>}
+                            </>
+                        ) : (
+                            <p className="snake-start-text">🐦 Flappy CTPS</p>
+                        )}
+                        <button className="snake-start-btn" onClick={(e) => { e.stopPropagation(); startGame(); }}>
+                            {gameOver ? 'Jogar Novamente' : 'Iniciar Jogo'}
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
 // ==================== MAIN GAMES PAGE ====================
 const Games = () => {
     const [activeTab, setActiveTab] = useState('snake');
@@ -947,6 +1269,7 @@ const Games = () => {
                 <button className={`game-tab ${activeTab === 'kszei' ? 'active' : ''}`} onClick={() => switchTab('kszei')}>😈 Kszei</button>
                 <button className={`game-tab ${activeTab === 'invaders' ? 'active' : ''}`} onClick={() => switchTab('invaders')}>👾 Invaders</button>
                 <button className={`game-tab ${activeTab === 'laura' ? 'active' : ''}`} onClick={() => switchTab('laura')}>💕 Laura & Mariana</button>
+                <button className={`game-tab ${activeTab === 'flappy' ? 'active' : ''}`} onClick={() => switchTab('flappy')}>🐦 Flappy CTPS</button>
             </div>
 
             {loading ? (
@@ -961,6 +1284,7 @@ const Games = () => {
                     {activeTab === 'kszei' && <MomentoKszei />}
                     {activeTab === 'invaders' && <SpaceInvaders adminMode={adminMode} />}
                     {activeTab === 'laura' && <LauraMariana adminMode={adminMode} />}
+                    {activeTab === 'flappy' && <FlappyBird adminMode={adminMode} />}
                 </>
             )}
         </div>

@@ -584,3 +584,58 @@
     .lm-canvas { width: 300px; height: 300px; }
     .lm-overlay { width: 300px; height: 300px; }
 }
+
+/* Flappy Bird */
+.fb-scores {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+}
+
+.fb-canvas-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.fb-canvas {
+    border: 2px solid rgba(241, 164, 22, 0.3);
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+}
+
+.fb-overlay {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 320px;
+    max-width: 100%;
+    height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 26, 46, 0.9);
+    border-radius: 8px;
+}
+
+.fb-new-record {
+    font-size: 1.1rem;
+    color: #F1A416;
+    font-weight: 700;
+    margin-bottom: 12px;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@media (max-width: 600px) {
+    .fb-canvas { width: 280px; height: 420px; }
+    .fb-overlay { width: 280px; height: 420px; }
+}
