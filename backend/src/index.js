@@ -49,7 +49,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/games', gamesRoutes);
 
 // Sync database and start server
-const { Badge } = require('./models');
+const { Badge, User, UserBadge } = require('./models');
 
 sequelize.sync({ alter: true }).then(async () => {
     console.log('Database synced successfully.');
@@ -62,6 +62,21 @@ sequelize.sync({ alter: true }).then(async () => {
     for (const b of gameBadges) {
         await Badge.findOrCreate({ where: { name: b.name }, defaults: b });
     }
+
+    // Award "Corredor de Fé" badge to specific users
+    try {
+        const [corredorBadge] = await Badge.findOrCreate({
+            where: { name: 'Corredor de Fé' },
+            defaults: { name: 'Corredor de Fé', description: 'Participou da corrida do MAC', emoji: '🏃' }
+        });
+        const corredorUsers = ['Laura', 'Mariana', 'Ks', 'Bruno', 'Carlinhos'];
+        for (const username of corredorUsers) {
+            const user = await User.findOne({ where: { username } });
+            if (user) {
+                await UserBadge.findOrCreate({ where: { userId: user.id, badgeId: corredorBadge.id } });
+            }
+        }
+    } catch (e) { console.error('Error awarding Corredor de Fé:', e); }
 
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
