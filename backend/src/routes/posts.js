@@ -29,7 +29,7 @@ if (process.env.CLOUDINARY_CLOUD_NAME) {
 }
 
 // Create a new post
-router.post('/', upload.fields([{ name: 'images', maxCount: 5 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
+router.post('/', upload.fields([{ name: 'images', maxCount: 10 }, { name: 'audio', maxCount: 1 }]), async (req, res) => {
     try {
         const { title, description, author, videoUrl } = req.body;
         const post = await Post.create({ title, description, author, videoUrl: videoUrl || null, audioUrl: null });
