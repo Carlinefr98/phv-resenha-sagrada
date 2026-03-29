@@ -16,7 +16,14 @@ const CreatePost = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     const handleImageChange = (e) => {
-        setImages([...e.target.files]);
+        const files = [...e.target.files];
+        if (files.length > 10) {
+            setError('Máximo de 10 fotos por post!');
+            e.target.value = '';
+            return;
+        }
+        setError('');
+        setImages(files);
     };
 
     const handleSubmit = async (e) => {
@@ -76,7 +83,7 @@ const CreatePost = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label>Imagens (opcional)</label>
+                        <label>Imagens (opcional — máx. 10 fotos)</label>
                         <div className="file-input-wrapper">
                             <input
                                 type="file"
